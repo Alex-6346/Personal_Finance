@@ -35,8 +35,12 @@ def splitwise_sync(s_obj: Splitwise):
     conn.commit()
     conn.close()
 
-
-if __name__ == '__main__':        
+if __name__ == '__main__':
     sObj = access_to_splitwise()
     splitwise_sync(sObj)
     currency(sObj,settings)
+
+#def run_sync_currency():
+#    sObj = access_to_splitwise()
+#    splitwise_sync(sObj)
+#    currency(sObj,settings)
