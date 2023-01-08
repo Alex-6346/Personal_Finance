@@ -7,16 +7,7 @@ from sql_queries_methods import create_tables, fill_tables
 
 from sql_currency import currency
 
-with open("settings.txt") as f:
-    settings = json.load(f)
 
-
-def access_to_splitwise():
-    s_obj = Splitwise(settings['splitwise_name'],
-                      settings['splitwise_pass'],
-                      api_key=settings['splitwise_key'])
-    return s_obj
-    
 
 def splitwise_sync(s_obj: Splitwise):
     user = s_obj.getCurrentUser()

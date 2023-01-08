@@ -2,13 +2,7 @@ from splitwise import Splitwise
 import sqlite3
 from sqlite3 import Error
 
-from sql_queries_methods import create_tables, fill_tables
-
-
-def access_to_splitwise():
-    s_obj = Splitwise("jYKW9NrdaDToz0Yozc3R6bS0yoQ0BEABc4JhFXEh", "hGJPvIbnuufdVMSIqnk8UBoz7JhudYyutZtweGeh",
-                      api_key="GalhmollL6o1lGlcRDY2XXsUVZkhgdKqcbX65DMY")
-    return s_obj
+from sql_queries_methods import create_tables, fill_tables, access_to_splitwise
 
 
 def splitwise_sync(s_obj: Splitwise):
