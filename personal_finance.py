@@ -9,6 +9,7 @@ from PyQt5.QtWidgets import QApplication, QMainWindow
 import sys
 
 # Running Splitwise Sync and currency process (Task 1 and 3) #
+# To be defined later)
 #run_sync_currency()
 
 ## Defining the Interface ##
