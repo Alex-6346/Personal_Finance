@@ -1,4 +1,18 @@
+import sqlite3
+
 from splitwise import Splitwise
+import json
+import requests
+
+with open("settings.txt") as f:
+    settings = json.load(f)
+
+
+def access_to_splitwise():
+    s_obj = Splitwise(settings['splitwise_name'],
+                      settings['splitwise_pass'],
+                      api_key=settings['splitwise_key'])
+    return s_obj
 
 
 def create_tables(cursor):
@@ -12,10 +26,12 @@ def create_tables(cursor):
                    "group_type text)")
     cursor.execute("CREATE TABLE IF NOT EXISTS Categories("
                    "id integer PRIMARY KEY,"
-                   "category_name text)")
+                   "category_name text type UNIQUE)")
     cursor.execute("CREATE TABLE IF NOT EXISTS Subcategories("
                    "id integer PRIMARY KEY,"
-                   "subcategory_name text)")
+                   "category_id integer,"
+                   "subcategory_name text,"
+                   "FOREIGN KEY (category_id) REFERENCES Categories(id))")
     cursor.execute("CREATE TABLE IF NOT EXISTS Transactions("
                    "id integer PRIMARY KEY,"
                    "expense_date datetime,"
@@ -63,9 +79,10 @@ def fill_tables(s_obj: Splitwise, cursor):
         subcategories.extend(c.getSubcategories())
         cursor.execute("INSERT OR IGNORE INTO Categories (id,category_name) VALUES (?,?)",
                        [c.getId(), c.getName()])
-    for s in set(subcategories):
-        cursor.execute("INSERT OR IGNORE INTO Subcategories (id,subcategory_name) VALUES (?,?)",
-                       [s.getId(), s.getName()])
+        for s in set(subcategories):
+            cursor.execute("INSERT OR IGNORE INTO Subcategories (id,category_id,subcategory_name) VALUES (?,?,?)",
+                           [s.getId(), c.getId(), s.getName()])
+
 
     # Insert information about expenses and how much every user in it paid in Transactions and TransactionItems tables
     transactions = s_obj.getExpenses()
@@ -98,3 +115,63 @@ def fill_tables(s_obj: Splitwise, cursor):
             for t_user in t_users:
                 cursor.execute('UPDATE TransactionItems SET  amount = ?  WHERE transaction_id = ? AND user_id = ?',
                                [t_user.getPaidShare(), t.getId(), t_user.getId()])
+
+
+def insert_category(conn, cursor, category_id: int, category_name: str):
+    try:
+        cursor.execute("INSERT INTO Categories (id,category_name) VALUES (?,?)",
+                   [category_id, category_name])
+        conn.commit()
+    except sqlite3.IntegrityError as err:
+        if str(err) == "UNIQUE constraint failed: Categories.id":
+            result = cursor.execute("SELECT * FROM Categories  WHERE id = (?)",
+                           [category_id])
+            print("Error - a category with id " + str(category_id) + " already exists: " + str(result.fetchone()))
+        if str(err) == "UNIQUE constraint failed: Categories.category_name":
+            result = cursor.execute("SELECT * FROM Categories  WHERE category_name = (?)",
+                                    [category_name])
+            print("Error - a category with name " + str(category_name) + " already exists: " + str(result.fetchone()))
+
+
+def insert_subcategory(conn, cursor, subcategory_id: int, category_id: int, subcategory_name: str):
+    try:
+        cursor.execute("INSERT INTO Subcategories (id,category_id,subcategory_name) VALUES (?,?,?)",
+                       [subcategory_id, category_id, subcategory_name])
+        conn.commit()
+    except sqlite3.IntegrityError as err:
+        if str(err) == "UNIQUE constraint failed: Subcategories.id":
+            result = cursor.execute("SELECT * FROM Subcategories  WHERE id = (?)",
+                                    [subcategory_id])
+            print("Error - a subcategory with id " + str(subcategory_id) + " already exists: " + str(result.fetchone()))
+        if str(err) == "UNIQUE constraint failed: Subcategories.subcategory_name":
+            result = cursor.execute("SELECT * FROM Subcategories  WHERE subcategory_name = (?)",
+                                    [subcategory_name])
+            print("Error - a subcategory with name " + str(subcategory_name) + " already exists: " + str(result.fetchone()))
+        if str(err) == "FOREIGN KEY constraint failed":
+            print("Error - a category with id " + str(category_id) + " does not exist.")
+
+
+
+def insert_transaction(conn, cursor, transaction_date: str, group_id: int, subcategory_id: int,
+                       description: str, currency_code: str, repeat_interval: int):
+    try:
+        cursor.execute("INSERT INTO Transactions (expense_date,group_id,subcategory_id,"
+                       "description,currency_code,repeat_interval) VALUES (?,?,?,?,?,?)",
+                       [transaction_date, group_id, subcategory_id, description,currency_code,repeat_interval])
+        conn.commit()
+    except sqlite3.IntegrityError as err:
+        if str(err) == "FOREIGN KEY constraint failed":
+            print("Error - such group id or subcategory id  does not exist.")
+        else:
+            print(err)
+
+def insert_transaction_item(conn, cursor, transaction_id: int, user_id: int, amount: int):
+    try:
+        cursor.execute("INSERT INTO TransactionItems (transaction_id, user_id, amount) VALUES (?,?,?)",
+                       [transaction_id, user_id, amount])
+        conn.commit()
+    except sqlite3.IntegrityError as err:
+        if str(err) == "FOREIGN KEY constraint failed":
+            print("Error - such transaction id or user id  does not exist.")
+        else:
+            print(err)
