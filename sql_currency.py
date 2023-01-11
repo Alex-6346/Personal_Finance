@@ -105,8 +105,14 @@ def currency(s_obj: Splitwise, settings: dict):
     df_exch = df_exch.T
     
     # remove 'EUR' prefix from column names
-    df_exch.columns = df_exch.columns.str.removeprefix('EUR')
-    
+    #df_exch.columns = df_exch.columns.str.removeprefix('EUR')
+    new_ex = []
+    for ex in df_exch.columns:
+        new_ex.append(ex[3:])
+
+    df_exch.columns = new_ex
+
+
     # row index is 'object', not datetime type
     df_exch.index.dtype
     
