@@ -69,6 +69,33 @@ ON tr.id = trit.transaction_id"""
 #
 # 'EUR' base, exchange rates defined as 'EUR' per foreign currency units
 # =============================================================================
+'''
+def fixer_api(date_start, date_end, symbols, settings):
+    
+    url_1 = f"""https://api.apilayer.com/fixer/timeseries?source=EUR&currencies={symbols}&start_date={date_start}&end_date={date_end}"""
+    
+    url_2 = f"""https://api.apilayer.com/currency_data/timeframe?source=EUR&currencies={symbols}&start_date={date_start}&end_date={date_end}"""
+    
+    payload = {}
+    key= {"apikey": settings['fixer_key']}
+    
+    if (datetime.now().weekday() // 2) != 0:
+        
+        url = url_2
+        
+        get_url = requests.get(url, headers=key, data = payload)
+        
+        return get_url.json()
+        
+    else:
+        url = url_1
+        
+        get_url = requests.get(url, headers=key, data = payload)
+        
+        return get_url.json()
+
+'''
+#%%
 
 def fixer_api(date_start, date_end, symbols, settings):
     
@@ -80,7 +107,6 @@ def fixer_api(date_start, date_end, symbols, settings):
     get_url = requests.get(url, headers=key, data = payload)
     
     return get_url.json()
-    
 
 
 #%%
