@@ -7,36 +7,7 @@ from sql_currency import currency
 from second_task import sql_income
 import unrect_transac as unrt 
 
-# unrect_transact = inc-exp+net_debt-fact_balance
-# net_debt = (owes_base- owed_base)
-# fact balace is the amount to be recorded as income (posite or negative)
-
-# by default fact balance = 0
-
-# if unrect_transact = inc - exp + net_debt - 0 < 0 
-# user have more expenses + debt  than  income and owes
-# to balance it user can input fact balance as unrect_transact opposite sign
-
-# to visualize current unrecorded transaction amount, by default fact balance = 0
-# unrt.unrecorded_transaction_no_write(sObj)
-
-# to retrieve variables used in unrecorded transactions
-# give correspondingly 6 variables in given order for each component
-# unrecorded_trans, income, expense, net_debt, owes_base, owed_base = unrt.unrecorded_transaction_no_write(sObj)
-
-
-# if one wants to visualize an unrecorded transaction for a fact balance of 5000
-# input a positive amount to compensate for a negative unrecorded transaction
-# input a negative amount to compensate for a positive unrecorded transaction
-# unrt.unrecorded_transaction_no_write(sObj, 5000)
-
-# to write in database  fact balance as income use:
-# this function will ask user to manually input a fact balance amount
-# unrt.unrecorded_transaction_write(sObj)
-
-# be careful when writing onto db as inputs cannot be manually erased
-# only can be compensated by inputting same amount in opposite sign to substract
-
+print(unrt.__doc__) #for unrecorded transactions function descriptions, arguments and returned values
 
 with open("settings.txt") as f:
     settings = json.load(f)
@@ -60,20 +31,28 @@ def splitwise_sync(s_obj: Splitwise):
     conn.close()
 
 if __name__ == '__main__':
+
     sObj = access_to_splitwise()
     splitwise_sync(sObj)
     sql_income(sObj)
+
+    #here insert your new income transaction commands
+
     currency(sObj,settings)
         
-    
-# unrecorded transaction components - without writing user input into database
+
+    print(unrt.unrecorded_transaction_no_write(sObj))
+    # does not affect db  
+    # current unrecorded transaction for default fact balance zero, or pass a second argument number for fact balance
+    # unrt.unrecorded_transaction_no_write(sObj, "numeric_value") #replace "numeric_value" by your amount
+
     #unrecorded_trans, income, expense, net_debt, owes_base, owed_base = unrt.unrecorded_transaction_no_write(sObj)
     
-    #print(unrecorded_trans, income, expense, net_debt, owes_base, owed_base)
     
-
-# uncomment to store unrecorded transaction with user input fact balance into db
-    #unrt.unrecorded_transaction_write(sObj) 
+    #unrt.unrecorded_transaction_write(sObj, "numeric_value") # replace "numeric_value" by your amount
+    # writes on db fact balance as (positive or negative) income that balance out unrecorded transactions 
+    
+     
 
 
 

@@ -2,56 +2,126 @@
 """
 Created on Thu Jan 12 15:43:32 2023
 
-@author: calna
+@author: robito
+
+SUMMARY
+
+# returned variables 
+unrecorded_trans, income, expense, net_debt, owes_base, owed_base = unrt.unrecorded_transaction_no_write(sObj)
+
+DOES NOT AFFECT DATABASE
+unrt.unrecorded_transaction_no_write(sObj)
+current unrecorded transactions for default fact balance = 0
+
+unrt.unrecorded_transaction_no_write(sObj, fact_balance) # fact_balance is a number
+positive fact_balance compensates for a negative unrecorded transaction
+negative fact_balance compensates for a positive unrecorded transaction
+
+
+AFFECTS DATABASE
+unrt.unrecorded_transaction_write(sObj, fact_balance)
+to write in database fact balance as (positive or negative) income
+
+when writing onto db inputs cannot be manually erased
+only can be compensated by inputting same amount with opposite sign
+
+
+# definition of unrecorded transaction
+"unrecorded_tran = income - expense + net_debt- (-fact_balance)"
+
+net_debt = owes_base - owed_base
+
+fact balace is the amount to be recorded as income (posite or negative)
+
+by default fact balance = 0
+
+if unrect_transact =< 0  expenses + debt higher than  income and owes
+
+if unrect_transact > 0  expenses + debt lower than  income and owes
+
+
+********************************************************************************
+
+DATA Content and output
+
+all amounts are reported in "EUR" currency by default
+
+it calculates Splitwise User total sum for income, expenses, user owes, user owed
+net debt (user owes - user owed )
+fact balance requires user value input
+
+following this definition
+unrecorded transactions = incomes - expenses + net debt - (-fact balance)
+
+user owes, user owed  foreign currency transactions are converted to "EUR"
+at the latest exchange rates 
+
+
+FUNCTIONABILITY
+
+1.
+function structure with default argument for fact balance = 0
+unrt.unrecorded_transaction_no_write(s_obj: Splitwise, fact_balance = 0.0)
+
+
+unrt.unrecorded_transaction_no_write(s_obj)
+does not overwrite database
+It yields current unrecorded transactions where default fact balance is set to zero
+
+It is an informative calculation for unrecorded transactions, user fact balance, and all other components:
+income, expeses, net debt, user owes, user owed
+
+To yield unrecorded transactions for a given fact balance introduce the fact balance as second parameter
+
+
+unrecorded_trans, income, expense, net_debt, owes_base, owed_base = unrt.unrecorded_transaction_no_write(s_obj)
+Retrieves variable components in following order
+
+a negative unrecorded_trans amount refers to unregistere income (expenses or owed higher than income or owes)
+
+a positive unrecorded_trans amount refers to unregistere expenses (income or owes higher than expenses or owed smaller)
+
+
+example:
+to balance out to zero a negative amount for unrecorded transactions introduce same amount with opposite sign 
+in zero_fact_balance 
+
+unrt.unrecorded_transaction_no_write(s_obj, -unrecorded_trans)
+
+
+2.
+unrt.unrecorded_transaction_write(s_obj, fact_balance)
+
+***  modifies permanently the database  ***
+
+it writes fact_balance as Income for following database parameters
+
+	user_id = s_obj.getCurrentUser().getId()
+
+	group_id = None
+        
+	#category = 100  #(Income)
+
+        subcategory = 105   # (Others)
+        
+        description = "Unrecorded Transactions"
+        
+        currency = 'EUR'
+        
+        repeat_interval = None
+
+
+a fact_balance positive amount will increase total income
+
+a fact_balance negative amount will decrease the overall income
+
+
+by default it returns a fresh unrecorded transactions re-calculation for a fact balance zero,
+that can be saved as
+
+unrecorded_trans, income, expense, net_debt, owes_base, owed_base = unrt.unrecorded_transaction_write(s_obj, fact_balance)
+
 """
-
-#%%
-
-# READ ME
-
-# DATA Content and output
-
-# all amounts are reported in "EUR" currency by default
-
-# it calculates Splitwise User total sum for income, expenses, user owes, user owed
-# net debt (user owes - user owed )
-# fact balance requires user value input
-
-# following this definition
-# unrecorded transactions = (incomes - expenses + net debt - fact balance)*(-1)
-
-# user owes, user owed  foreign currency transactions are converted to "EUR"
-# at the latest exchange rates 
-
-#%%
-
-# FUNCTIONABILITY
-
-# unrecorded_transaction_no_write(s_obj: Splitwise, zero_fact_balance = 0.0)
-
-# reports income, expeses, net debt, user owes, user owed and unrecorded transactions
-#  for user Fact balance default to zero
-#                        without writing unrecorded transaction to the database
-
-
-# required arguments: s_obj -splitwise user credentials- and fact_balance (float - set by default to zero)
-
-# example for retrieving variables
-# unrecorded_trans, income, expense, net_debt, owes_base, owed_base = unrecorded_transaction_no_write(s_obj)
-
-
-#############################################################################
-
-# unrecorded_transaction_write(s_obj)
-
-# after running it asks user to input his fact balance
-
-# ***  modifies permanently the database  ***
-
-# it only writes into database the amount calculated for unrecorded transactions
-# given fact balance input manually by user
-
-
 
 #%%
 
@@ -163,21 +233,6 @@ symbols, balance_curr = friends_balance_currency(s_obj)
 
 #%%
 
-#def fixer_api_latest(symbols, settings):
-    
-#    url = f"""https://api.apilayer.com/currency_data/live?source=EUR&currencies={symbols}"""
-    
-#    payload = {}
-#    key= {"apikey": settings['fixer_key2']}
-    
-#    get_url = requests.get(url, headers=key, data = payload)
-    
-#    with open ('exchange_rate.json','w') as f:
-#        json.dump(get_url.json(), f)
-    
-#    return get_url.json()
-
-#%%
 '''
 def fixer_api_latest(settings):
     
@@ -223,7 +278,7 @@ def fixer_api_latest(settings):
 
 def fixer_api_latest(settings):
     '''
-    # request all latest currency rates only once a day and saves them to json file
+    request all latest currency rates only once a day and saves them to json file
     '''
     
     settings = pd.read_json('settings.txt', typ='series')
@@ -358,8 +413,9 @@ def unrecorded_transaction_no_write(s_obj: Splitwise, fact_balance = 0.0):
 #%%
 
 
-def unrecorded_transaction_write(s_obj: Splitwise):
+def unrecorded_transaction_write(s_obj: Splitwise, fact_balance):
     
+    """
     while True:
         
         try: 
@@ -369,7 +425,8 @@ def unrecorded_transaction_write(s_obj: Splitwise):
         except ValueError:
             print("\nPlease enter a numeric amount \n")
             continue
-    
+    """
+	    
     unrecord_trans, inc, exp, net_debt, owes_base, owed_base = unrecorded_transaction_no_write(s_obj, fact_balance)
     
     if fact_balance != 0:
@@ -408,26 +465,12 @@ def unrecorded_transaction_write(s_obj: Splitwise):
             
             #conn.close()
         
-        #return unrecorded_transaction_no_write(s_obj, fact_balance)
         return unrecorded_transaction_no_write(s_obj)
     
     else:
         
         return unrecorded_transaction_no_write(s_obj)
 
-
-#%%
-'''
-unrecord_trans, inc, exp, net_debt  =  unrecorded_transaction_no_write(s_obj)
-
-print(f'inc = {inc}\nexp = {exp}\nnet_debt = {net_debt}\nunrecorded transactions = inc - exp + net debt \nunrecorded transactions = {unrecord_trans}')
-
-#%%
-
-unr_test = unrecorded_transaction_write(s_obj)
-
-print(unr_test)
-'''
 
 #%%
 
