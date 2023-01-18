@@ -7,7 +7,8 @@ from sql_currency import currency
 from second_task import sql_income
 import unrect_transac as unrt 
 
-print(unrt.__doc__) #for unrecorded transactions function descriptions, arguments and returned values
+#See unrecorded transactions function descriptions, arguments and returned values
+#print(unrt.__doc__) 
 
 with open("settings.txt") as f:
     settings = json.load(f)
@@ -37,24 +38,24 @@ if __name__ == '__main__':
     sql_income(sObj)
 
     #here insert your new income transaction commands
-
+    
+    # run currency(sObj,settings), only after u insert all ur income rows
     currency(sObj,settings)
-        
-
-    print(unrt.unrecorded_transaction_no_write(sObj))
-    # does not affect db  
-    # current unrecorded transaction for default fact balance zero, or pass a second argument number for fact balance
-    # unrt.unrecorded_transaction_no_write(sObj, "numeric_value") #replace "numeric_value" by your amount
-
-    #unrecorded_trans, income, expense, net_debt, owes_base, owed_base = unrt.unrecorded_transaction_no_write(sObj)
     
     
-    #unrt.unrecorded_transaction_write(sObj, "numeric_value") # replace "numeric_value" by your amount
+    # Does not write on database
+    # change 0 for othe number that u want for fact balance
+    unrecorded_trans, income, expense, net_debt, owes_base, owed_base = unrt.unrecorded_transaction_no_write(sObj,0)
+    
+    print(f"\nAll reported amounts are in Euros (€)\n\nunrecorded transactions:{unrecorded_trans},\n\
+total income: {income},\ntotal expenses: {expense},\nnet debt: {net_debt},\n\
+total owes: {owes_base},\ntotal owed: {owed_base}")
+    
+    
+    # Writes on database only  when fact balance is different than zero
     # writes on db fact balance as (positive or negative) income that balance out unrecorded transactions 
+    unrt.unrecorded_transaction_write(sObj, 0) # replace 0 by your fact balance
     
-     
-
-
 
 #def run_sync_currency():
 #    sObj = access_to_splitwise()
