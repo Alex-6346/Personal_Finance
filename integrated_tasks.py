@@ -2,7 +2,8 @@ from splitwise import Splitwise
 import sqlite3
 from sqlite3 import Error
 import json
-from sql_queries_methods import create_tables, fill_tables, access_to_splitwise
+from sql_queries_methods import create_tables, fill_tables, access_to_splitwise, insert_transaction, \
+    insert_transaction_item
 from sql_currency import currency
 from second_task import sql_income
 import unrect_transac as unrt 
