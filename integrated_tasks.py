@@ -47,16 +47,20 @@ if __name__ == '__main__':
     # Does not write on database
     # change 0 for othe number that u want for fact balance
     unrecorded_trans, income, expense, net_debt, owes_base, owed_base = unrt.unrecorded_transaction_no_write(sObj,0)
-    
+
+
     print(f"\nAll reported amounts are in Euros (€)\n\nunrecorded transactions:{unrecorded_trans},\n\
 total income: {income},\ntotal expenses: {expense},\nnet debt: {net_debt},\n\
 total owes: {owes_base},\ntotal owed: {owed_base}")
-    
-    
+
+    unrt.unrecorded_transaction_no_write(sObj, -33740)
+
+
     # Writes on database only  when fact balance is different than zero
     # writes on db fact balance as (positive or negative) income that balance out unrecorded transactions 
     unrt.unrecorded_transaction_write(sObj, 0) # replace 0 by your fact balance
-    
+
+    unrt.unrecorded_transaction_write(sObj, -46294)
 
 #def run_sync_currency():
 #    sObj = access_to_splitwise()
