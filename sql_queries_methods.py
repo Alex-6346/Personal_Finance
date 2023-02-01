@@ -153,7 +153,7 @@ def insert_subcategory(conn, cursor, subcategory_id: int, category_id: int, subc
 
 
 def insert_transaction(conn, cursor, transaction_date: str, group_id: int, subcategory_id: int,
-                       description: str, currency_code: str, repeat_interval: int):
+                       description: str, currency_code: str, repeat_interval: str):
     try:
         cursor.execute("INSERT INTO Transactions (expense_date,group_id,subcategory_id,"
                        "description,currency_code,repeat_interval) VALUES (?,?,?,?,?,?)",
