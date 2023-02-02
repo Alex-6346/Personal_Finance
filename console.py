@@ -316,8 +316,8 @@ class Ui_MainWindow(object):
         self.Income_edit.setStyleSheet("background-color:white")
         self.Income_edit.setText("")
         self.Income_edit.setObjectName("Income_edit")
-        self.Button_prediction_3 = QtWidgets.QPushButton(self.income)
-        self.Button_prediction_3.setGeometry(QtCore.QRect(110, 430, 111, 41))
+        self.Button_Income_submit = QtWidgets.QPushButton(self.income)
+        self.Button_Income_submit.setGeometry(QtCore.QRect(110, 430, 111, 41))
         palette = QtGui.QPalette()
         brush = QtGui.QBrush(QtGui.QColor(20, 56, 127))
         brush.setStyle(QtCore.Qt.SolidPattern)
@@ -355,13 +355,13 @@ class Ui_MainWindow(object):
         brush = QtGui.QBrush(QtGui.QColor(20, 56, 127))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Window, brush)
-        self.Button_prediction_3.setPalette(palette)
+        self.Button_Income_submit.setPalette(palette)
         font = QtGui.QFont()
         font.setPointSize(12)
-        self.Button_prediction_3.setFont(font)
-        self.Button_prediction_3.setStyleSheet("border-radius:20px;\n"
+        self.Button_Income_submit.setFont(font)
+        self.Button_Income_submit.setStyleSheet("border-radius:20px;\n"
 "background-color:rgb(20, 56, 127)")
-        self.Button_prediction_3.setObjectName("Button_prediction_3")
+        self.Button_Income_submit.setObjectName("Button_Income_submit")
         self.label = QtWidgets.QLabel(self.income)
         self.label.setGeometry(QtCore.QRect(0, 10, 501, 71))
         font = QtGui.QFont()
@@ -482,8 +482,8 @@ class Ui_MainWindow(object):
         self.label_11.setFont(font)
         self.label_11.setStyleSheet("background-color:transparent")
         self.label_11.setObjectName("label_11")
-        self.Button_prediction_4 = QtWidgets.QPushButton(self.expense)
-        self.Button_prediction_4.setGeometry(QtCore.QRect(110, 430, 111, 41))
+        self.Button_expense_submit = QtWidgets.QPushButton(self.expense)
+        self.Button_expense_submit.setGeometry(QtCore.QRect(110, 430, 111, 41))
         palette = QtGui.QPalette()
         brush = QtGui.QBrush(QtGui.QColor(20, 56, 127))
         brush.setStyle(QtCore.Qt.SolidPattern)
@@ -521,13 +521,13 @@ class Ui_MainWindow(object):
         brush = QtGui.QBrush(QtGui.QColor(20, 56, 127))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Window, brush)
-        self.Button_prediction_4.setPalette(palette)
+        self.Button_expense_submit.setPalette(palette)
         font = QtGui.QFont()
         font.setPointSize(12)
-        self.Button_prediction_4.setFont(font)
-        self.Button_prediction_4.setStyleSheet("border-radius:20px;\n"
+        self.Button_expense_submit.setFont(font)
+        self.Button_expense_submit.setStyleSheet("border-radius:20px;\n"
 "background-color:rgb(20, 56, 127)")
-        self.Button_prediction_4.setObjectName("Button_prediction_4")
+        self.Button_expense_submit.setObjectName("Button_expense_submit")
         self.title_expense = QtWidgets.QLabel(self.expense)
         self.title_expense.setGeometry(QtCore.QRect(0, 10, 501, 71))
         font = QtGui.QFont()
@@ -1099,7 +1099,7 @@ class Ui_MainWindow(object):
         self.stackedWidget.addWidget(self.unr)
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(MainWindow)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 504, 36))
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 504, 21))
         self.menubar.setObjectName("menubar")
         self.menuMenu = QtWidgets.QMenu(self.menubar)
         self.menuMenu.setObjectName("menuMenu")
@@ -1126,7 +1126,7 @@ class Ui_MainWindow(object):
         self.menubar.addAction(self.menuMenu.menuAction())
 
         self.retranslateUi(MainWindow)
-        self.stackedWidget.setCurrentIndex(0)
+        self.stackedWidget.setCurrentIndex(2)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
@@ -1139,7 +1139,7 @@ class Ui_MainWindow(object):
         self.Button_Expense.setText(_translate("MainWindow", "Expense Input"))
         self.AppTitle.setText(_translate("MainWindow", "Personal Finance"))
         self.Button_back.setText(_translate("MainWindow", "Back"))
-        self.Button_prediction_3.setText(_translate("MainWindow", "Submit"))
+        self.Button_Income_submit.setText(_translate("MainWindow", "Submit"))
         self.label.setText(_translate("MainWindow", "Income Input"))
         self.label_6.setText(_translate("MainWindow", "Date:"))
         self.Amount_income_label.setText(_translate("MainWindow", "Amount:"))
@@ -1167,7 +1167,7 @@ class Ui_MainWindow(object):
         self.expense_category.setItemText(11, _translate("MainWindow", "11-Utilities"))
         self.expense_amount_label.setText(_translate("MainWindow", "Amount:"))
         self.label_11.setText(_translate("MainWindow", "Category:"))
-        self.Button_prediction_4.setText(_translate("MainWindow", "Submit"))
+        self.Button_expense_submit.setText(_translate("MainWindow", "Submit"))
         self.title_expense.setText(_translate("MainWindow", "Expense Input"))
         self.Button_back_2.setText(_translate("MainWindow", "Back"))
         self.title_prediction.setText(_translate("MainWindow", "Prediction"))
@@ -1197,7 +1197,6 @@ class Ui_MainWindow(object):
         self.actionReporting.setText(_translate("MainWindow", "Reporting"))
         self.actionUnrecorded_transactions.setText(_translate("MainWindow", "Unrecorded transactions"))
         self.actionExit.setText(_translate("MainWindow", "Exit"))
-
 
 
 if __name__ == "__main__":
