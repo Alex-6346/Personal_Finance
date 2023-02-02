@@ -31,8 +31,8 @@ expenses_df = pd.DataFrame(expenses, columns = ['expense_date', 'subcategory_id'
 income_df = pd.DataFrame(income, columns = ['expense_date', 'subcategory_id', 'sum(base_amount)', 'type'])
 
 # Create a PDF file for the plots
-now = datetime.now().strftime("%Y-%m-%d")
-pp = PdfPages(f'{now}.pdf')
+#now = datetime.now().strftime("%Y-%m-%d")
+#pp = PdfPages(f'{now}.pdf')
 
                                                                                     ###creating pie chart last month###
 
@@ -50,20 +50,23 @@ month1_exp_df['sum(base_amount)'] = month1_exp_df['sum(base_amount)'].apply(rela
 list_sub_1 = month1_exp_df['subcategory_name'].tolist()
 list_amount_1 = month1_exp_df['sum(base_amount)'].tolist()
 
+labels_1 = [f'{l}, {s:0.1f}%' for l, s in zip(list_sub_1, list_amount_1)]
+
 #plot as pie chart
 fig1, ax1 = plt.subplots()
-pie_chart = ax1.pie(list_amount_1, labels = list_sub_1, autopct='%1.1f%%', startangle=90, wedgeprops={'linewidth': 3.0, 'edgecolor': 'white'})
-
+pie_chart = ax1.pie(list_amount_1, labels = labels_1, startangle=90, wedgeprops={'linewidth': 3.0, 'edgecolor': 'white'}, textprops=dict(color='white'))
 plt.title('Expenses last month')
-plt.legend(title = "subcategory name:")
+plt.legend(title = "subcategory name:",loc = 'upper right', bbox_to_anchor=(0.4, 0.3),)
 ax1.axis('equal')  # Equal aspect ratio ensures that pie is drawn as a circle.
 pie1 = plt.gcf()
 
 #save the pie chart
-pie1.savefig(f'{now}_pie1.jpg')
-pp.savefig()
+#pie1.savefig(f'{now}_pie1.jpg')
+#pp.savefig()
 
-                                                                                ###creating pie chart 2 months ago###
+
+
+                                                               ###creating pie chart 2 months ago###
 
 
 #calculating percentage of each subcategory
@@ -80,17 +83,20 @@ month2_exp_df['sum(base_amount)'] = month2_exp_df['sum(base_amount)'].apply(rela
 list_sub_2 = month2_exp_df['subcategory_name'].tolist()
 list_amount_2 = month2_exp_df['sum(base_amount)'].tolist()
 
+labels_2 = [f'{l}, {s:0.1f}%' for l, s in zip(list_sub_2, list_amount_2)]
+
 #plot as pie chart
 fig2, ax2 = plt.subplots()
-pie_chart_2 = ax2.pie(list_amount_2, labels = list_sub_2, startangle=90, wedgeprops={'linewidth': 3.0, 'edgecolor': 'white'})
+pie_chart_2 = ax2.pie(list_amount_2, labels = labels_2, startangle=90, wedgeprops={'linewidth': 3.0, 'edgecolor': 'white'}, textprops=dict(color='white'))
 plt.title('Expenses two months ago')
-plt.legend(title = "subcategory name:", loc = 'upper right', bbox_to_anchor=(0.05, 0.5))
+plt.legend(title = "subcategory name:", loc = 'upper right', bbox_to_anchor=(0.2, 0.5))
 ax1.axis('equal')  # Equal aspect ratio ensures that pie is drawn as a circle.
 pie2 = plt.gcf()
 
 #save the pie chart
-pie2.savefig(f'{now}_pie2.jpg')
-pp.savefig()
+#pie2.savefig(f'{now}_pie2.jpg')
+#pp.savefig()
+
 
                                                                                 ###creating pie chart 3 months ago###
 
@@ -110,17 +116,22 @@ month3_exp_df['sum(base_amount)'] = month3_exp_df['sum(base_amount)'].apply(rela
 list_sub_3 = month3_exp_df['subcategory_name'].tolist()
 list_amount_3 = month3_exp_df['sum(base_amount)'].tolist()
 
+labels_3 = [f'{l}, {s:0.1f}%' for l, s in zip(list_sub_3, list_amount_3)]
+
 #plot as pie chart
 fig3, ax3 = plt.subplots()
-pie_chart_3, texts = ax3.pie(list_amount_3, labels = list_sub_3, startangle=90, wedgeprops={'linewidth': 3.0, 'edgecolor': 'white'})
+pie_chart_3 = ax3.pie(list_amount_3, labels = labels_3, startangle=90, wedgeprops={'linewidth': 3.0, 'edgecolor': 'white'}, textprops=dict(color='white') )
 plt.title('Expenses three months ago')
-plt.legend(title = "subcategory name:", loc = 'upper right', bbox_to_anchor=(0.05, 0.5))
+plt.legend(title = "subcategory name:", loc = 'best', bbox_to_anchor=(0.05, 0.5), prop={'size':8})
 ax1.axis('equal')  # Equal aspect ratio ensures that pie is drawn as a circle.
 pie3 = plt.gcf()
 
 #save the pie chart
-pie3.savefig(f'{now}_pie3.jpg')
-pp.savefig()
+#pie3.savefig(f'{now}_pie3.jpg')
+#pp.savefig()
+plt.show()
+
+
 
 
                                                                             ##creating bar chart expenses vs. income###
@@ -144,8 +155,8 @@ plt.title('income vs. expenses in last 3 months')
 bar = plt.gcf()
 
 #save the pie chart
-bar.savefig(f'{now}_bar.jpg')
-pp.savefig()
+#bar.savefig(f'{now}_bar.jpg')
+#pp.savefig()
 
 # Close the PDF file
-pp.close()
+#pp.close()
