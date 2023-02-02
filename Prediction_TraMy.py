@@ -114,5 +114,5 @@ plt.show()
 
 ##save it as pdf and jpg##
 now = datetime.now().strftime("%Y-%m-%d")
-fig1.savefig(f'prediction_{now}.pdf')
-fig1.savefig(f'prediction_{now}.jpg')
+fig1.savefig(f'{now}_prediction.pdf')
+fig1.savefig(f'{now}_prediction.jpg')

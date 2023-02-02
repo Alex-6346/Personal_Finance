@@ -1,8 +1,8 @@
 import sqlite3
 from datetime import datetime, date
-
 import pandas as pd
 import matplotlib.pyplot as plt
+from matplotlib.backends.backend_pdf import PdfPages
 
 try:
     sqliteConnect = sqlite3.connect("61730143.sqlite")
@@ -30,8 +30,11 @@ month3_exp_df = pd.DataFrame(month3_exp, columns = ['expense_date', 'subcategory
 expenses_df = pd.DataFrame(expenses, columns = ['expense_date', 'subcategory_id', 'sum(base_amount)', 'type'])
 income_df = pd.DataFrame(income, columns = ['expense_date', 'subcategory_id', 'sum(base_amount)', 'type'])
 
+# Create a PDF file for the plots
+now = datetime.now().strftime("%Y-%m-%d")
+pp = PdfPages(f'{now}.pdf')
 
-                                       ###creating pie chart last month###
+                                                                                    ###creating pie chart last month###
 
 #calculating percentage of each subcategory
 tot_1 = month1_exp_df['sum(base_amount)'].sum()
@@ -54,10 +57,13 @@ pie_chart = ax1.pie(list_amount_1, labels = list_sub_1, autopct='%1.1f%%', start
 plt.title('Expenses last month')
 plt.legend(title = "subcategory name:")
 ax1.axis('equal')  # Equal aspect ratio ensures that pie is drawn as a circle.
+pie1 = plt.gcf()
 
-plt.show()
+#save the pie chart
+pie1.savefig(f'{now}_pie1.jpg')
+pp.savefig()
 
-                                                ###creating pie chart 2 months ago###
+                                                                                ###creating pie chart 2 months ago###
 
 
 #calculating percentage of each subcategory
@@ -80,10 +86,13 @@ pie_chart_2 = ax2.pie(list_amount_2, labels = list_sub_2, startangle=90, wedgepr
 plt.title('Expenses two months ago')
 plt.legend(title = "subcategory name:", loc = 'upper right', bbox_to_anchor=(0.05, 0.5))
 ax1.axis('equal')  # Equal aspect ratio ensures that pie is drawn as a circle.
+pie2 = plt.gcf()
 
-plt.show()
+#save the pie chart
+pie2.savefig(f'{now}_pie2.jpg')
+pp.savefig()
 
-                                                                ###creating pie chart 3 months ago###
+                                                                                ###creating pie chart 3 months ago###
 
 
 
@@ -107,10 +116,14 @@ pie_chart_3, texts = ax3.pie(list_amount_3, labels = list_sub_3, startangle=90, 
 plt.title('Expenses three months ago')
 plt.legend(title = "subcategory name:", loc = 'upper right', bbox_to_anchor=(0.05, 0.5))
 ax1.axis('equal')  # Equal aspect ratio ensures that pie is drawn as a circle.
+pie3 = plt.gcf()
 
-plt.show()
+#save the pie chart
+pie3.savefig(f'{now}_pie3.jpg')
+pp.savefig()
 
-                                            ##creating bar chart expenses vs. income###
+
+                                                                            ##creating bar chart expenses vs. income###
 
 
 expenses_df = pd.DataFrame(expenses, columns = ['expense_date', 'subcategory_id', 'subcategory_name', 'sum(base_amount)'])
@@ -128,5 +141,11 @@ plt.bar(category, values, color ='maroon',width = 0.5)
 plt.xlabel('category')
 plt.ylabel('amount in €')
 plt.title('income vs. expenses in last 3 months')
+bar = plt.gcf()
 
-plt.show()
+#save the pie chart
+bar.savefig(f'{now}_bar.jpg')
+pp.savefig()
+
+# Close the PDF file
+pp.close()
