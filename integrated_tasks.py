@@ -38,10 +38,9 @@ if __name__ == '__main__':
     splitwise_sync(sObj)
     sql_income(sObj)
 
-    #here insert your new income transaction commands
-    
-    # run currency(sObj,settings), only after u insert all ur income rows
-    currency(sObj,settings)
+    status = currency(sObj,settings)
+    print(f'\nAPI status code: {status} \n"200" means success\n\
+Other than "200" an error ocurred\n"None", it is not necessary a new call\n')
     
     
     # Does not write on database
@@ -59,8 +58,6 @@ total owes: {owes_base},\ntotal owed: {owed_base}")
     # Writes on database only  when fact balance is different than zero
     # writes on db fact balance as (positive or negative) income that balance out unrecorded transactions 
     unrt.unrecorded_transaction_write(sObj, 0) # replace 0 by your fact balance
-
-    unrt.unrecorded_transaction_write(sObj, -46294)
 
 #def run_sync_currency():
 #    sObj = access_to_splitwise()

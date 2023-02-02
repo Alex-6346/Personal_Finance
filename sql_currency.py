@@ -10,104 +10,89 @@ import requests
 import pandas as pd
 import numpy as np
 from splitwise import Splitwise
-
 import sqlite3
 from datetime import datetime
 
+import json
+with open("settings.txt") as f:
+    settings = json.load(f)
+
+from sql_queries_methods import access_to_splitwise
+s_obj = access_to_splitwise()
+
 #%%
 
-# Parses Splitwise SQL database to df
-# Retrieves transactions currency symbols and dates
+# =============================================================================
+# Simple sql currency conversion
+#
+# takes the latest (or saved json-file for) exchange rates 
+# =============================================================================
 
 def symbol_date_sqldf(s_obj: Splitwise):
 
     with sqlite3.connect(str(s_obj.getCurrentUser().getId())+'.sqlite') as conn:
             
-        sql_str = """SELECT tr.id,tr.expense_date,tr.currency_code, trit.user_id, \
+        sql_str = """SELECT tr.id,tr.currency_code, trit.user_id, \
 trit.amount, trit.base_amount \
 FROM Transactions AS tr \
 INNER JOIN TransactionItems AS trit \
 ON tr.id = trit.transaction_id""" 
     
         df_sql = pd.read_sql(sql_str, conn)
-            
-        
-    # parsing dates in default 'UCT'
-    # starts on 30 Nov 23Hr  instead of 1 Dec 00Hr   
-    # =============================================================================
-    #  parsing expense_date column to 'CET' datetime zone
-    # =============================================================================
-    df_sql['expense_date'] = pd.to_datetime(df_sql['expense_date']).dt.tz_convert('CET')
-            
-    # =============================================================================
-    # 'date' column  without time
-    # =============================================================================
-    df_sql['date'] = df_sql['expense_date'].dt.date
-        
+                
+    # # string of unique currencies, excluding 'EUR'
+    # curr_str = ','.join(df_sql.currency_code.unique()[
+    #     df_sql.currency_code.unique() != 'EUR'])
     
-    # start date
-    dt_strt = str(df_sql['date'].min())
-    
-# =============================================================================
-#   # end date, takes maximum date  before or equal to current  date
-# =============================================================================
-    dt_end = str(df_sql['date'][df_sql['date'] <=datetime.today().date()].max())
-    
-    # string of unique currencies, excluding 'EUR'
-    curr_str = ','.join(df_sql.currency_code.unique()[df_sql.currency_code.unique() != 'EUR'])
-    
-    return dt_strt, dt_end, curr_str, df_sql
+    return df_sql
+
 
 
 #%%
 
-# =============================================================================
-# Connects to fixes.io API with key in setting.txt
-#
-# Requests date range (between start and end date) and currency symbols 
-# obtained from  symbol_date_sqldf() function
-#
-# 'EUR' base, exchange rates defined as 'EUR' per foreign currency units
-# =============================================================================
-'''
-def fixer_api(date_start, date_end, symbols, settings):
+def fixer_api_latest(settings):
+    '''
+    request all latest currency rates only once a day and saves them to json file
+    '''
     
-    url_1 = f"""https://api.apilayer.com/fixer/timeseries?source=EUR&currencies={symbols}&start_date={date_start}&end_date={date_end}"""
+    settings = pd.read_json('settings.txt', typ='series')
     
-    url_2 = f"""https://api.apilayer.com/currency_data/timeframe?source=EUR&currencies={symbols}&start_date={date_start}&end_date={date_end}"""
+    url = """https://api.apilayer.com/currency_data/live?source=EUR"""
     
     payload = {}
-    key= {"apikey": settings['fixer_key']}
+    key= {"apikey": settings['fixer_key2']}
     
-    if (datetime.now().weekday() // 2) != 0:
-        
-        url = url_2
-        
-        get_url = requests.get(url, headers=key, data = payload)
-        
-        return get_url.json()
-        
-    else:
-        url = url_1
-        
-        get_url = requests.get(url, headers=key, data = payload)
-        
-        return get_url.json()
-
-'''
-#%%
-
-def fixer_api(date_start, date_end, symbols, settings):
+    # if status error it returns the error
     
-    url = f"""https://api.apilayer.com/currency_data/timeframe?source=EUR&currencies={symbols}&start_date={date_start}&end_date={date_end}"""
+    status_code = None
     
-    payload = {}
-    key= {"apikey": settings['fixer_key']}
+    # if no status_code error updates only once a day currency rates in file
+    if settings['current_date'] != str(datetime.now().date()):
+        
+        settings['current_date'] = str(datetime.now().date())
+        
+        settings.to_json('settings.txt')
+        
+        while True:
+            
+            try:
+                get_url = requests.get(url, headers=key, data = payload)
+        
+                status_code = get_url.status_code
+                
+                if status_code == 200:
+                    with open ('exchange_rate.json','w') as f:
+                        json.dump(get_url.json(), f)
+                    
+                    break
+                
+                else:
+                    break
+            
+            except Exception:
+                break
     
-    get_url = requests.get(url, headers=key, data = payload)
-    
-    return get_url.json()
-
+    return status_code
 
 #%%
 
@@ -118,17 +103,21 @@ def fixer_api(date_start, date_end, symbols, settings):
 
 def currency(s_obj: Splitwise, settings: dict):
     
-    date_start, date_end, symbols, df_sql = symbol_date_sqldf(s_obj)
+    df_sql = symbol_date_sqldf(s_obj)
     
-    json_url = fixer_api(date_start, date_end, symbols, settings)
+    #json_url, status = fixer_api(date_start, date_end, symbols, settings)
+    
+    status = fixer_api_latest(settings)
+    
+    # reading exchange rate from json local file
+    with open ('exchange_rate.json','r') as f:
+        json_exch= json.load(f)       # load for reading json file f
+
     
         
     # df for exchage rate base EUR with dates as columns
     # EXCHANGE RATE IN Rows, DATE in Columns
-    df_exch = pd.DataFrame(json_url['quotes'])
-    
-    # dates as rows and exchage rate as columns base EUR
-    df_exch = df_exch.T
+    df_exch = pd.DataFrame(json_exch['quotes'], index=[0])
     
     # remove 'EUR' prefix from column names
     #df_exch.columns = df_exch.columns.str.removeprefix('EUR')
@@ -136,27 +125,28 @@ def currency(s_obj: Splitwise, settings: dict):
     for ex in df_exch.columns:
         new_ex.append(ex[3:])
 
+    # currencies without 'EUR' names
     df_exch.columns = new_ex
+    
+    # dates as rows and exchage rate as columns base EUR
+    df_exch = df_exch.T
+    
+    # renaming column
+    df_exch.columns = ['exch_base_EUR']
 
 
-    # row index is 'object', not datetime type
-    df_exch.index.dtype
-    
-    # setting index as datetime
-    df_exch.index = pd.to_datetime(df_exch.index)
-    
-        
+    df_sql.columns    
     # =============================================================================
     # joining df_exch and df_sql
     # =============================================================================
-    df_ts = df_sql.set_index('date').join(df_exch).reset_index()
+    df_ts = df_sql.join(df_exch, on='currency_code', how='left')
     
     # dropping old dfs
     del df_sql
     del df_exch
     
     # setting column to float type
-    df_ts['base_amount'] = df_ts['base_amount'].astype('float')
+    #df_ts['base_amount'] = df_ts['base_amount'].astype('float')
     
     
     # =============================================================================
@@ -166,10 +156,12 @@ def currency(s_obj: Splitwise, settings: dict):
     # where currency is equal to base 'EUR'  base_amount equals amount column
     df_ts.loc[df_ts['currency_code']=='EUR', 'base_amount'] = df_ts['amount']
     
+    
     df_ts.dtypes
         
     # list of currencies except base 'EUR'
-    curr_ls = df_ts.currency_code.unique()[df_ts.currency_code.unique() != 'EUR'].tolist()
+    curr_ls = df_ts.currency_code.unique()[
+        df_ts.currency_code.unique() != 'EUR'].tolist()
     
     # =============================================================================
     # FILL df 'base_amount' in EUR  with for loop, index-mask and .loc in "exch()"
@@ -180,7 +172,7 @@ def currency(s_obj: Splitwise, settings: dict):
         
         mask = df_ts['currency_code'] == curr
                 
-        df_ts.loc[mask,'base_amount']= df_ts['amount']/df_ts[curr]
+        df_ts.loc[mask,'base_amount']= df_ts['amount']/df_ts['exch_base_EUR']
           
     
     
@@ -211,6 +203,8 @@ def currency(s_obj: Splitwise, settings: dict):
         cur.execute(sql_str)
         
         conn.commit()
+    
+    return status
 
 
 #%%
