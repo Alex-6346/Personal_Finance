@@ -5,6 +5,7 @@ import pandas as pd
 from datetime import datetime
 import math
 import matplotlib.pyplot as plt
+import numpy as np
 
 
 try:
@@ -94,23 +95,24 @@ Y = [balance_dec,balance_jan,balance_feb]
 reg.fit([[1],[2],[3]],Y)
 reg.coef_
 reg.intercept_
-reg.predict([[4]])
+pred = reg.predict([[4]])
+### Extracting prediction as integer ###
+for i in pred:
+    prediction = i
 
 #plot the output#
 
-X_test = [1,2,3]
-plt.scatter(X_test, Y, color="black")
-plt.plot([4], reg.coef_, color="red", linewidth=10)
-plt.xticks(())
-plt.yticks(())
+X_values = np.array([1,2,3,4])
+Y_values = np.array([balance_dec,balance_jan,balance_feb,prediction])
+plt.scatter(X_values, Y_values, color="black", linewidth=3)
+plt.plot(X_values, prediction, color="blue", linewidth=3)
 plt.xlabel('months')
 plt.ylabel('balance')
-plt.title('Linear Regression Plot')
+plt.title('Prediction')
+fig1 = plt.gcf()
 plt.show()
 
-# Get the current date and time
+##save it as pdf and jpg##
 now = datetime.now().strftime("%Y-%m-%d")
-
-
-# Save the plot as a PDF file with the date and time in the file name
-plt.savefig(f'prediction_{now}.pdf')
+fig1.savefig(f'prediction_{now}.pdf')
+fig1.savefig(f'prediction_{now}.jpg')
