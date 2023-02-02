@@ -4,13 +4,15 @@ class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(504, 522)
-        MainWindow.setMinimumSize(QtCore.QSize(0, 0))
-        MainWindow.setMaximumSize(QtCore.QSize(757, 844))
+        MainWindow.setMinimumSize(QtCore.QSize(504, 522))
+        MainWindow.setMaximumSize(QtCore.QSize(504, 522))
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setStyleSheet("")
         self.centralwidget.setObjectName("centralwidget")
         self.stackedWidget = QtWidgets.QStackedWidget(self.centralwidget)
-        self.stackedWidget.setGeometry(QtCore.QRect(0, 0, 761, 851))
+        self.stackedWidget.setGeometry(QtCore.QRect(0, 0, 504, 522))
+        self.stackedWidget.setMinimumSize(QtCore.QSize(504, 522))
+        self.stackedWidget.setMaximumSize(QtCore.QSize(504, 522))
         self.stackedWidget.setStyleSheet("background-color:qlineargradient(spread:pad, x1:0, y1:0.148, x2:0, y2:0.079, stop:0 rgba(116, 137, 228, 255), stop:1 rgba(255, 204, 0, 255))")
         self.stackedWidget.setObjectName("stackedWidget")
         self.home = QtWidgets.QWidget()
@@ -154,7 +156,7 @@ class Ui_MainWindow(object):
 "background-color:rgb(20, 56, 127)")
         self.Button_prediction.setObjectName("Button_prediction")
         self.Button_reporting = QtWidgets.QPushButton(self.home)
-        self.Button_reporting.setGeometry(QtCore.QRect(260, 170, 181, 61))
+        self.Button_reporting.setGeometry(QtCore.QRect(260, 260, 181, 61))
         palette = QtGui.QPalette()
         brush = QtGui.QBrush(QtGui.QColor(20, 56, 127))
         brush.setStyle(QtCore.Qt.SolidPattern)
@@ -200,7 +202,7 @@ class Ui_MainWindow(object):
 "background-color:rgb(20, 56, 127)")
         self.Button_reporting.setObjectName("Button_reporting")
         self.Button_Expense = QtWidgets.QPushButton(self.home)
-        self.Button_Expense.setGeometry(QtCore.QRect(260, 260, 181, 61))
+        self.Button_Expense.setGeometry(QtCore.QRect(260, 170, 181, 61))
         palette = QtGui.QPalette()
         brush = QtGui.QBrush(QtGui.QColor(20, 56, 127))
         brush.setStyle(QtCore.Qt.SolidPattern)
@@ -1097,7 +1099,7 @@ class Ui_MainWindow(object):
         self.stackedWidget.addWidget(self.unr)
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(MainWindow)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 504, 21))
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 504, 36))
         self.menubar.setObjectName("menubar")
         self.menuMenu = QtWidgets.QMenu(self.menubar)
         self.menuMenu.setObjectName("menuMenu")
@@ -1195,6 +1197,7 @@ class Ui_MainWindow(object):
         self.actionReporting.setText(_translate("MainWindow", "Reporting"))
         self.actionUnrecorded_transactions.setText(_translate("MainWindow", "Unrecorded transactions"))
         self.actionExit.setText(_translate("MainWindow", "Exit"))
+
 
 
 if __name__ == "__main__":
