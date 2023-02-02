@@ -3,6 +3,7 @@ import sqlite3
 from splitwise import Splitwise
 import json
 import requests
+import re
 
 with open("settings.txt") as f:
     settings = json.load(f)
@@ -13,6 +14,18 @@ def access_to_splitwise():
                       settings['splitwise_pass'],
                       api_key=settings['splitwise_key'])
     return s_obj
+
+def get_connection_cursor():
+    try:
+        s_obj = access_to_splitwise()
+        user = s_obj.getCurrentUser()
+        user_id = user.getId()
+        conn = sqlite3.connect(str(user_id) + ".sqlite")
+        conn.execute("PRAGMA foreign_keys = 1")
+        cursor = conn.cursor()
+    except Exception as e:
+        print(e)
+    return conn,cursor,user_id
 
 
 def create_tables(cursor):
@@ -175,3 +188,13 @@ def insert_transaction_item(conn, cursor, transaction_id: int, user_id: int, amo
             print("Error - such transaction id or user id  does not exist.")
         else:
             print(err)
+
+
+def find_income_subcategory_by_name(conn, cursor, subcategory_name: str):
+    result = cursor.execute("SELECT id FROM  Subcategories WHERE Subcategories.category_id = 100 AND Subcategories.subcategory_name =(?)",[subcategory_name])
+    return cursor.fetchone()
+
+
+def find_expense_subcategory_by_name(conn, cursor, subcategory_name: str):
+    result = cursor.execute("SELECT id FROM  Subcategories WHERE Subcategories.category_id != 100 AND Subcategories.subcategory_name =(?)",[subcategory_name])
+    return cursor.fetchone()
