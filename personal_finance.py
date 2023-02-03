@@ -8,7 +8,7 @@ from PyQt5 import QtCore, QtWidgets, QtGui
 from PyQt5.QtWidgets import QApplication, QMainWindow, QMessageBox
 import sys
 
-from PersonalFinance_Group5_Presentation.sql_queries_methods import find_income_subcategory_by_name, \
+from sql_queries_methods import find_income_subcategory_by_name, \
         get_connection_cursor, insert_transaction, insert_transaction_item, find_expense_subcategory_by_name
 from console import Ui_MainWindow
 ## Task 3 ##
