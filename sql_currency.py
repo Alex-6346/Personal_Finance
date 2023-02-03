@@ -62,36 +62,24 @@ def fixer_api_latest(settings):
     payload = {}
     key= {"apikey": settings['fixer_key2']}
     
-    # if status error it returns the error
+    # connect to api and verify status code before pulling data
+    get_url = requests.get(url, headers=key, data = payload)
+    status_code = get_url.status_code
     
-    status_code = None
-    
-    # if no status_code error updates only once a day currency rates in file
-    if settings['current_date'] != str(datetime.now().date()):
+
+    if status_code == 200 and settings['current_date'] != str(datetime.now().date()):
         
         settings['current_date'] = str(datetime.now().date())
         
         settings.to_json('settings.txt')
         
-        while True:
-            
-            try:
-                get_url = requests.get(url, headers=key, data = payload)
-        
-                status_code = get_url.status_code
-                
-                if status_code == 200:
-                    with open ('exchange_rate.json','w') as f:
-                        json.dump(get_url.json(), f)
-                    
-                    break
-                
-                else:
-                    break
-            
-            except Exception:
-                break
+        with open ('exchange_rate.json','w') as f:
+            json.dump(get_url.json(), f)
     
+    elif status_code == 200 and settings['current_date'] == str(datetime.now().date()):
+        status_code = None
+    
+    # if no status_code error updates only once a day currency rates in file                
     return status_code
 
 #%%
