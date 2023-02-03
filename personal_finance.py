@@ -18,10 +18,6 @@ from datetime import datetime
 import unrect_transac as unrt
 
 
-# Running Splitwise Sync and currency process (Task 1 and 3) #
-# Task 1, Task 2, Task 3 #
-#run_sync()
-
 
 ## Main Window ##
 class MainWindow:
@@ -48,6 +44,7 @@ class MainWindow:
 
                 ### Signal of Buttons of UNR transactions ###
                 self.ui.UNR_calculate_button.clicked.connect(self.unr_calculate)
+                self.ui.UNR_submit_button.clicked.connect(self.unr_submit)
 
                 ### Signal for Income Input ###
                 self.ui.Button_Income_submit.clicked.connect(self.submit_income)
@@ -75,19 +72,46 @@ class MainWindow:
 
         ### Button evens in UNR ###
         def unr_calculate(self):
-                fact = int(self.ui.Fact_edit.text())
-                #sObj = access_to_splitwise()
-                #splitwise_sync(sObj)
-                #sql_income(sObj)
-                #currency(sObj, settings)
-                run_sync()
-                unr, income, expense, debt, owes, owed = unrt.unrecorded_transaction_write(sObj, fact)
-                self.ui.Income_value_label.setText(str(income))
-                self.ui.Expense_value_label.setText(str(expense))
-                self.ui.Debt_value_label.setText(str(debt))
-                self.ui.Owe_label_value.setText(str(owes))
-                self.ui.Owed_label_value.setText(str(owed))
-                self.ui.UNR_label_2.setText("UNR Amount: "+str(unr))
+                try:
+                        fact = round(float(self.ui.Fact_edit.text()),2)
+                except ValueError:
+                        fact_err = QMessageBox()
+                        fact_err.setWindowTitle("Factual balance input error")
+                        fact_err.setText("Invalid factual balance amount. Please make sure to write a number")
+                        fact_err.setIcon(QMessageBox.Critical)
+                        fact_popup = fact_err.exec_()
+                else:
+                        unr, income, expense, net_debt, owes, owed = unrt.unrecorded_transaction_no_write(fact)
+                        print(fact)
+                        self.ui.Income_value_label.setText(str(round(income,2))+" €")
+                        self.ui.Expense_value_label.setText(str(round(expense,2))+" €")
+                        self.ui.Debt_value_label.setText(str(round(net_debt,2))+" €")
+                        self.ui.Owe_label_value.setText(str(round(owes,2))+" €")
+                        self.ui.Owed_label_value.setText(str(round(owed,2))+" €")
+                        self.ui.UNR_label_2.setText("UNR Amount: "+str(round(unr,2))+" €")
+        def unr_submit(self):
+                try:
+                        fact = round(float(self.ui.Fact_edit.text()),2)
+                except ValueError:
+                        fact_err = QMessageBox()
+                        fact_err.setWindowTitle("Factual balance input error")
+                        fact_err.setText("Invalid factual balance amount. Please make sure to write a number")
+                        fact_err.setIcon(QMessageBox.Critical)
+                        fact_popup = fact_err.exec_()
+                else:
+                        unr, income, expense, debt, owes, owed = unrt.unrecorded_transaction_write(fact)
+                        self.ui.Income_value_label.setText(str(round(income,2))+" €")
+                        self.ui.Expense_value_label.setText(str(round(expense,2))+" €")
+                        self.ui.Debt_value_label.setText(str(round(net_debt,2))+" €")
+                        self.ui.Owe_label_value.setText(str(round(owes,2))+" €")
+                        self.ui.Owed_label_value.setText(str(round(owed,2))+" €")
+                        self.ui.UNR_label_2.setText("UNR Amount: "+str(round(unr,2))+" €")
+                        msg_unr = QMessageBox()
+                        msg_unr.setWindowTitle("Fact Balance Confirmation")
+                        msg_unr.setText("Factual Balance has been submitted successfully")
+                        msg_unr.setIcon(QMessageBox.Information)
+                        unr_popup = msg_unr.exec_()
+                        self.ui.stackedWidget.setCurrentWidget(self.ui.home)
 
         ### Events for Income Submit ###
         def submit_income(self):
@@ -161,7 +185,9 @@ class MainWindow:
 #%%
 
 def run_app():
+    # Run task 1, task 2, task 3 #
     run_sync()
+    # Initiates App ##
     app = QApplication(sys.argv)
     main_win = MainWindow()
     main_win.show()
