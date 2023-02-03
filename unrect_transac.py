@@ -151,13 +151,14 @@ s_obj = access_to_splitwise()
 
 #%%
 
-def income_expenses(s_obj: Splitwise, method="Income", category='100'):
+def income_expenses(s_obj: Splitwise, method="income"):
     
     if method.lower() == "income":
         sign = '='
     else:
         sign = "!="
     
+    #sign = '='
     #s_obj = '61730143'
     with sqlite3.connect(str(s_obj.getCurrentUser().getId())+'.sqlite') as conn:
             
@@ -166,9 +167,17 @@ def income_expenses(s_obj: Splitwise, method="Income", category='100'):
         FROM Subcategories AS sub \
         INNER JOIN Transactions AS trans ON trans.subcategory_id = sub.id \
         INNER JOIN TransactionItems AS item ON item.transaction_id = trans.id \
-        WHERE sub.category_id {sign} {category} """ 
+        WHERE sub.category_id {sign} '100' """ 
     
         df_sql = pd.read_sql(sql_str, conn)
+        
+        df_sql.columns
+        
+        # checking that category_id "100" does not appear in expenses df method
+        df_sql.category_id.value_counts()
+        
+        len(df_sql.category_id.value_counts().index[
+            df_sql.category_id.value_counts().index == 100])
         
         sum = df_sql['base_amount'].sum()
         
