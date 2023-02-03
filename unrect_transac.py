@@ -126,14 +126,12 @@ unrecorded_trans, income, expense, net_debt, owes_base, owed_base = unrt.unrecor
 #%%
 
 import pandas as pd
-#import numpy as np
 import sqlite3
 from datetime import datetime
 
 from sql_queries_methods import insert_transaction, insert_transaction_item
 
 from splitwise import Splitwise
-#from splitwise.expense import Expense
 import json
 import requests
 
@@ -231,74 +229,6 @@ def friends_balance_currency(s_obj: Splitwise):
 
 symbols, balance_curr = friends_balance_currency(s_obj)
 
-#%%
-
-'''
-def fixer_api_latest(settings):
-    
-    settings = pd.read_json('settings.txt', typ='series')
-    
-    # old function now deprecated and broken
-    #url = f"""https://api.apilayer.com/currency_data/live?source=EUR&currencies={symbols}"""
-    
-    url_1 = """https://api.apilayer.com/currency_data/live?source=EUR"""
-    
-    url_2 = """https://api.apilayer.com/fixer/latest?source=EUR"""
-    
-    payload = {}
-    key= {"apikey": settings['fixer_key2']}
-    
-    # request all latest currency rates only once a day and saves them to file
-    
-    if settings['current_date'] != str(datetime.now().date()):
-        
-        settings['current_date'] = str(datetime.now().date())
-        
-        settings.to_json('settings.txt')
-        
-        if (datetime.now().weekday() // 2) != 0:
-            
-            url = url_1
-            
-            get_url = requests.get(url, headers=key, data = payload)
-            
-            with open ('exchange_rate.json','w') as f:
-                json.dump(get_url.json(), f)
-            
-        else:
-            url = url_2
-            
-            get_url = requests.get(url, headers=key, data = payload)
-            
-            with open ('exchange_rate.json','w') as f:
-                json.dump(get_url.json(), f)
-        
-'''
-#%%
-
-def fixer_api_latest(settings):
-    '''
-    request all latest currency rates only once a day and saves them to json file
-    '''
-    
-    settings = pd.read_json('settings.txt', typ='series')
-    
-    url = """https://api.apilayer.com/currency_data/live?source=EUR"""
-    
-    payload = {}
-    key= {"apikey": settings['fixer_key2']}
-    
-    if settings['current_date'] != str(datetime.now().date()):
-        
-        settings['current_date'] = str(datetime.now().date())
-        
-        settings.to_json('settings.txt')
-            
-        get_url = requests.get(url, headers=key, data = payload)
-        
-        with open ('exchange_rate.json','w') as f:
-            json.dump(get_url.json(), f)
-
 
 #%%
 
@@ -306,8 +236,8 @@ def friends_balance_euros(s_obj: Splitwise, settings: dict):
     
     symbols, balance_curr = friends_balance_currency(s_obj)
     
-    #json_url = fixer_api_latest(symbols, settings)
-    fixer_api_latest(settings)
+
+    #fixer_api_latest(settings)
     
     # reading exchange rate from json local file
     with open ('exchange_rate.json','r') as f:
