@@ -14,12 +14,19 @@ import sqlite3
 from datetime import datetime
 
 import json
-with open("settings.txt") as f:
-    settings = json.load(f)
 
-from sql_queries_methods import access_to_splitwise
-s_obj = access_to_splitwise()
+#%%
 
+def access_to_splitwise():
+    with open("settings.txt") as f:
+        settings = json.load(f)
+
+    s_obj = Splitwise(settings['splitwise_name'],
+                      settings['splitwise_pass'],
+                      api_key=settings['splitwise_key'])
+    return s_obj
+
+#s_obj = access_to_splitwise()
 #%%
 
 # =============================================================================
@@ -28,8 +35,10 @@ s_obj = access_to_splitwise()
 # takes the latest (or saved json-file for) exchange rates 
 # =============================================================================
 
-def symbol_date_sqldf(s_obj: Splitwise):
-
+def symbol_date_sqldf():
+    
+    s_obj = access_to_splitwise()
+    
     with sqlite3.connect(str(s_obj.getCurrentUser().getId())+'.sqlite') as conn:
             
         sql_str = """SELECT tr.id,tr.currency_code, trit.user_id, \
@@ -50,7 +59,7 @@ ON tr.id = trit.transaction_id"""
 
 #%%
 
-def fixer_api_latest(settings):
+def fixer_api_latest():
     '''
     request all latest currency rates only once a day and saves them to json file
     '''
@@ -89,13 +98,15 @@ def fixer_api_latest(settings):
 # and fills "base_amount" column in SQL database
 # =============================================================================
 
-def currency(s_obj: Splitwise, settings: dict):
+def currency():
     
-    df_sql = symbol_date_sqldf(s_obj)
+    s_obj = access_to_splitwise()
+    
+    df_sql = symbol_date_sqldf()
     
     #json_url, status = fixer_api(date_start, date_end, symbols, settings)
     
-    status = fixer_api_latest(settings)
+    status = fixer_api_latest()
     
     # reading exchange rate from json local file
     with open ('exchange_rate.json','r') as f:

@@ -10,8 +10,10 @@ import unrect_transac as unrt
 #See unrecorded transactions function descriptions, arguments and returned values
 #print(unrt.__doc__) 
 
-with open("settings.txt") as f:
-    settings = json.load(f)
+# def settings():
+#     with open("settings.txt") as f:
+#         settin = json.load(f)
+#     return settin
 
 
 def splitwise_sync(s_obj: Splitwise):
@@ -31,26 +33,40 @@ def splitwise_sync(s_obj: Splitwise):
     conn.commit()
     conn.close()
 
-if __name__ == '__main__':
-
+##First Task##
+def run_sync():
+    
     sObj = access_to_splitwise()
     splitwise_sync(sObj)
-    
     sql_income(sObj)
-    
-    status = currency(sObj,settings)
+    status = currency()
     print(f'\nAPI status code: {status} \n"200" success. Today´s rates saved to file\n\
 Other than "200" an API error ocurred. Old rates taken from local file\n\
 "None", not necessary a new call. Today´s rates taken from local file\n')
     
+    unrecorded_trans, income, expense, net_debt, owes_base, owed_base = unrt.unrecorded_transaction_no_write(0)
+
+    print(f"\nAll reported amounts are in Euros (€)\n\nunrecorded transactions:{unrecorded_trans},\n\
+    total income: {income},\ntotal expenses: {expense},\nnet debt: {net_debt},\n\
+    total owes: {owes_base},\ntotal owed: {owed_base}")
+
+
+
+if __name__ == '__main__':
+
+    sObj = access_to_splitwise()
+    splitwise_sync(sObj)
+    sql_income(sObj)
     
+    status = currency()
+      
     # Does not write on database
     # change 0 for othe number that u want for fact balance
-    unrecorded_trans, income, expense, net_debt, owes_base, owed_base = unrt.unrecorded_transaction_no_write(sObj,0)
+    unrecorded_trans, income, expense, net_debt, owes_base, owed_base = unrt.unrecorded_transaction_no_write(0)
     
-    unrt.unrecorded_transaction_no_write(sObj)
+    unrt.unrecorded_transaction_no_write()
     
-    unrt.unrecorded_transaction_no_write(sObj,13020)
+    unrt.unrecorded_transaction_no_write(13020)
     
     print(f"\nAll reported amounts are in Euros (€)\n\nunrecorded transactions:{unrecorded_trans},\n\
 total income: {income},\ntotal expenses: {expense},\nnet debt: {net_debt},\n\
@@ -59,10 +75,7 @@ total owes: {owes_base},\ntotal owed: {owed_base}")
     
     # Writes on database only  when fact balance is different than zero
     # writes on db fact balance as (positive or negative) income that balance out unrecorded transactions 
-    unrt.unrecorded_transaction_write(sObj, 0) # replace 0 by your fact balance
+    unrt.unrecorded_transaction_write(0) # replace 0 by your fact balance
     
 
-##First Task##
-def run_sync():
-    sObj = access_to_splitwise()
-    splitwise_sync(sObj)
+    

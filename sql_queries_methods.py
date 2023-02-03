@@ -5,11 +5,10 @@ import json
 import requests
 import re
 
-with open("settings.txt") as f:
-    settings = json.load(f)
-
-
 def access_to_splitwise():
+    with open("settings.txt") as f:
+        settings = json.load(f)
+
     s_obj = Splitwise(settings['splitwise_name'],
                       settings['splitwise_pass'],
                       api_key=settings['splitwise_key'])

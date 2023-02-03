@@ -137,11 +137,10 @@ import requests
 
 #%%
 
-with open("settings.txt") as f:
-    settings = json.load(f)
-
-
 def access_to_splitwise():
+    with open("settings.txt") as f:
+        settings = json.load(f)
+
     s_obj = Splitwise(settings['splitwise_name'],
                       settings['splitwise_pass'],
                       api_key=settings['splitwise_key'])
@@ -151,7 +150,9 @@ s_obj = access_to_splitwise()
 
 #%%
 
-def income_expenses(s_obj: Splitwise, method="income"):
+def income_expenses(method="income"):
+    
+    s_obj = access_to_splitwise()
     
     if method.lower() == "income":
         sign = '='
@@ -191,7 +192,9 @@ def income_expenses(s_obj: Splitwise, method="income"):
 
 #%%
 
-def friends_balance_currency(s_obj: Splitwise):    
+def friends_balance_currency():    
+    
+    s_obj = access_to_splitwise()
     
     # calls Splitwise User's each Friend balance in different currencies
     friends = s_obj.getFriends()
@@ -236,14 +239,19 @@ def friends_balance_currency(s_obj: Splitwise):
     return curr_str, balance_curr
                 
 
-symbols, balance_curr = friends_balance_currency(s_obj)
+#symbols, balance_curr = friends_balance_currency(s_obj)
 
 
 #%%
 
-def friends_balance_euros(s_obj: Splitwise, settings: dict):
+def friends_balance_euros():
     
-    symbols, balance_curr = friends_balance_currency(s_obj)
+    #s_obj = access_to_splitwise()
+    
+    with open("settings.txt") as f:
+        settings = json.load(f)
+    
+    symbols, balance_curr = friends_balance_currency()
     
 
     #fixer_api_latest(settings)
@@ -334,17 +342,18 @@ def insert_transaction_item_base(conn, cursor, transaction_id: int, user_id: int
 
 #%%
 
-def unrecorded_transaction_no_write(s_obj: Splitwise, fact_balance = 0.0):
+def unrecorded_transaction_no_write(fact_balance = 0.0):
     
-    exp = income_expenses(s_obj, 'ExpeNditure')
+    
+    exp = income_expenses('ExpeNditure')
 
-    inc = income_expenses(s_obj)
+    inc = income_expenses()
     
-    owes_base, owed_base, net_debt = friends_balance_euros(s_obj, settings)
+    owes_base, owed_base, net_debt = friends_balance_euros()
     
     # unrecorded transactions for zero fact balance input by user
     # with negative sign, just as in PersonalFinance.pdf
-    unrec_trans_zero_factbal = inc - exp + net_debt - (-fact_balance)
+    unrec_trans_zero_factbal = inc - exp + net_debt - fact_balance*(-1)
     
     return unrec_trans_zero_factbal, inc, exp, net_debt, owes_base, owed_base
 
@@ -352,7 +361,7 @@ def unrecorded_transaction_no_write(s_obj: Splitwise, fact_balance = 0.0):
 #%%
 
 
-def unrecorded_transaction_write(s_obj: Splitwise, fact_balance):
+def unrecorded_transaction_write(fact_balance = 0):
     
     """
     while True:
@@ -365,8 +374,10 @@ def unrecorded_transaction_write(s_obj: Splitwise, fact_balance):
             print("\nPlease enter a numeric amount \n")
             continue
     """
-	    
-    unrecord_trans, inc, exp, net_debt, owes_base, owed_base = unrecorded_transaction_no_write(s_obj, fact_balance)
+    
+    unrecord_trans, inc, exp, net_debt, owes_base, owed_base = unrecorded_transaction_no_write(fact_balance)
+    s_obj = access_to_splitwise()
+
     
     if fact_balance != 0:
     
@@ -404,11 +415,11 @@ def unrecorded_transaction_write(s_obj: Splitwise, fact_balance):
             
             #conn.close()
         
-        return unrecorded_transaction_no_write(s_obj)
+        return unrecorded_transaction_no_write()
     
     else:
         
-        return unrecorded_transaction_no_write(s_obj)
+        return unrecorded_transaction_no_write()
 
 
 #%%

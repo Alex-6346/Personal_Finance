@@ -37,7 +37,7 @@ def sql_income(s_obj: Splitwise):
     #hour, minute, second = map(int, time_entry.split(':'))
     #date = datetime(year, month, day, hour, minute, second).strftime('%Y-%m-%dT%H:%M:%SZ')
 
-
+"""
     insert_transaction(conn, cursor, '2022-12-20T15:46:56Z', 41498693, 101, 'Salary', 'USD', "monthly")
     transaction_id_salary = cursor.lastrowid
     insert_transaction(conn, cursor, '2022-12-20T15:46:56Z', 41498693, 102, 'Business', 'USD', None)
@@ -51,6 +51,7 @@ def sql_income(s_obj: Splitwise):
     insert_transaction_item(conn, cursor, transaction_id_business, 61730143, 700)
 
     # Creating 20 random Income transactions for Max Mustermann
+
     for x in range(20):
         subcategory_id = rand.randint(101, 105)
         amount = rand.randint(1, 100)
@@ -62,3 +63,4 @@ def sql_income(s_obj: Splitwise):
                            None)
         transaction_id = cursor.lastrowid
         insert_transaction_item(conn, cursor, transaction_id, 61730143, amount)
+"""

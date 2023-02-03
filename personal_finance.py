@@ -8,26 +8,20 @@ from PyQt5 import QtCore, QtWidgets, QtGui
 from PyQt5.QtWidgets import QApplication, QMainWindow, QMessageBox
 import sys
 
-from sql_queries_methods import find_income_subcategory_by_name, \
-        get_connection_cursor, insert_transaction, insert_transaction_item, find_expense_subcategory_by_name
-from console import Ui_MainWindow
-## Task 3 ##
-from sql_currency import currency
+from sql_queries_methods import *
 
+from console import Ui_MainWindow
 from integrated_tasks import *
 from datetime import datetime
-from sql_queries_methods import create_tables, fill_tables, access_to_splitwise
-from second_task import sql_income
+
+# Task 4
 import unrect_transac as unrt
 
 
-
 # Running Splitwise Sync and currency process (Task 1 and 3) #
-# Task 1 #
-run_sync()
-#Task 3#
-#run_currency()
-### Defining the Interface ###
+# Task 1, Task 2, Task 3 #
+#run_sync()
+
 
 ## Main Window ##
 class MainWindow:
@@ -82,10 +76,11 @@ class MainWindow:
         ### Button evens in UNR ###
         def unr_calculate(self):
                 fact = int(self.ui.Fact_edit.text())
-                sObj = access_to_splitwise()
-                splitwise_sync(sObj)
-                sql_income(sObj)
-                currency(sObj, settings)
+                #sObj = access_to_splitwise()
+                #splitwise_sync(sObj)
+                #sql_income(sObj)
+                #currency(sObj, settings)
+                run_sync()
                 unr, income, expense, debt, owes, owed = unrt.unrecorded_transaction_write(sObj, fact)
                 self.ui.Income_value_label.setText(str(income))
                 self.ui.Expense_value_label.setText(str(expense))
@@ -162,11 +157,16 @@ class MainWindow:
                                 msg_exp.setIcon(QMessageBox.Information)
                                 E_popup = msg_exp.exec_()
                                 self.ui.stackedWidget.setCurrentWidget(self.ui.home)
-def run_app():
-        app = QApplication(sys.argv)
-        main_win = MainWindow()
-        main_win.show()
-        sys.exit(app.exec_())
 
+#%%
+
+def run_app():
+    run_sync()
+    app = QApplication(sys.argv)
+    main_win = MainWindow()
+    main_win.show()
+    sys.exit(app.exec_())
+
+#%%
 
 run_app()
