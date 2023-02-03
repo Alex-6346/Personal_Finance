@@ -62,8 +62,7 @@ total owes: {owes_base},\ntotal owed: {owed_base}")
 
     unrt.unrecorded_transaction_write(sObj, -46294)
 
-#def run_sync_currency():
-#    sObj = access_to_splitwise()
-#    splitwise_sync(sObj)
-#    currency(sObj,settings)
-
+##First Task##
+def run_sync():
+    sObj = access_to_splitwise()
+    splitwise_sync(sObj)

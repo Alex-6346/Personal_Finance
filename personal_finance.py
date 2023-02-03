@@ -16,11 +16,9 @@ from sql_currency import currency
 
 from integrated_tasks import *
 from datetime import datetime
-
-
-#from sql_queries_methods import create_tables, fill_tables, access_to_splitwise
-#from second_task import sql_income
-#import unrect_transac as unrt
+from sql_queries_methods import create_tables, fill_tables, access_to_splitwise
+from second_task import sql_income
+import unrect_transac as unrt
 
 
 
@@ -84,6 +82,10 @@ class MainWindow:
         ### Button evens in UNR ###
         def unr_calculate(self):
                 fact = int(self.ui.Fact_edit.text())
+                sObj = access_to_splitwise()
+                splitwise_sync(sObj)
+                sql_income(sObj)
+                currency(sObj, settings)
                 unr, income, expense, debt, owes, owed = unrt.unrecorded_transaction_write(sObj, fact)
                 self.ui.Income_value_label.setText(str(income))
                 self.ui.Expense_value_label.setText(str(expense))
@@ -95,51 +97,71 @@ class MainWindow:
         ### Events for Income Submit ###
         def submit_income(self):
                 conn, cursor, user_id = get_connection_cursor()
-                amount = int(self.ui.Income_edit.text())
-                print(amount)
-                subcategory = self.ui.Income_category.currentText()
-                subcategory = subcategory.split("-")[1]
-                print(subcategory)
-                subcategory_id = find_income_subcategory_by_name(conn,cursor,subcategory)[0]
-                print(subcategory_id)
-                transaction_date = self.ui.dateEdit_income.date()
-                transaction_date = transaction_date.toString(QtCore.Qt.DateFormat.ISODate)+"T00:00:00Z"
-                print(transaction_date)
-
-                insert_transaction(conn, cursor, transaction_date, None, subcategory_id, None, 'EUR', None)
-                transaction_id = cursor.lastrowid
-                insert_transaction_item(conn, cursor, transaction_id, user_id, amount)
-                print("done!")
-                msg_inc = QMessageBox()
-                msg_inc.setWindowTitle("Income Input Confirmation")
-                msg_inc.setText("Income has been submitted successfully")
-                I_popup = msg_inc.exec_()
-                self.ui.stackedWidget.setCurrentWidget(self.ui.home)
+                try:
+                        amount = abs(round(float(self.ui.Income_edit.text()),2))
+                except ValueError:
+                        amount_err = QMessageBox()
+                        amount_err.setWindowTitle("Input Error")
+                        amount_err.setText("Invalid amount. Please make sure to write a number")
+                        amount_err.setIcon(QMessageBox.Critical)
+                        err_popup = amount_err.exec_()
+                else:
+                        subcategory = self.ui.Income_category.currentText()
+                        if subcategory == 'Choose category':
+                                cat_err = QMessageBox()
+                                cat_err.setWindowTitle("Category Error")
+                                cat_err.setText("Please choose a valid category")
+                                cat_err.setIcon(QMessageBox.Critical)
+                                cat_popup = cat_err.exec_()
+                        else:
+                                subcategory = subcategory.split("-")[1]
+                                subcategory_id = find_income_subcategory_by_name(conn,cursor,subcategory)[0]
+                                transaction_date = self.ui.dateEdit_income.date()
+                                transaction_date = transaction_date.toString(QtCore.Qt.DateFormat.ISODate)+"T00:00:00Z"
+                                insert_transaction(conn, cursor, transaction_date, None, subcategory_id, None, 'EUR', None)
+                                transaction_id = cursor.lastrowid
+                                insert_transaction_item(conn, cursor, transaction_id, user_id, amount)
+                                msg_inc = QMessageBox()
+                                msg_inc.setWindowTitle("Income Input Confirmation")
+                                msg_inc.setText("Income has been submitted successfully")
+                                msg_inc.setIcon(QMessageBox.Information)
+                                I_popup = msg_inc.exec_()
+                                self.ui.stackedWidget.setCurrentWidget(self.ui.home)
 
 
         ### Events for Expense Submit ###
         def submit_expense(self):
                 conn, cursor, user_id = get_connection_cursor()
-                amount = int(self.ui.expense_edit.text())
-                print(amount)
-                subcategory = self.ui.expense_category.currentText()
-                subcategory = subcategory.split("-")[1]
-                print(subcategory)
-                subcategory_id = find_expense_subcategory_by_name(conn, cursor, subcategory)[0]
-                print(subcategory_id)
-                transaction_date = self.ui.dateEdit_expense.date()
-                transaction_date = transaction_date.toString(QtCore.Qt.DateFormat.ISODate) + "T00:00:00Z"
-                print(transaction_date)
-
-                insert_transaction(conn, cursor, transaction_date, None, subcategory_id, None, 'EUR', None)
-                transaction_id = cursor.lastrowid
-                insert_transaction_item(conn, cursor, transaction_id, user_id, amount)
-                print("done!")
-                msg_exp = QMessageBox()
-                msg_exp.setWindowTitle("Expense Input Confirmation")
-                msg_exp.setText("Expense has been submitted successfully")
-                E_popup = msg_exp.exec_()
-                self.ui.stackedWidget.setCurrentWidget(self.ui.home)
+                try:
+                        amount = abs(round(float(self.ui.expense_edit.text()),2))
+                except ValueError:
+                       amount_err = QMessageBox()
+                       amount_err.setWindowTitle("Input Error")
+                       amount_err.setText("Invalid amount. Please make sure to write a number")
+                       amount_err.setIcon(QMessageBox.Critical)
+                       err_popup = amount_err.exec_()
+                else:
+                        subcategory = self.ui.expense_category.currentText()
+                        if subcategory == 'Choose category':
+                                cat_err = QMessageBox()
+                                cat_err.setWindowTitle("Category Error")
+                                cat_err.setText("Please choose a valid category")
+                                cat_err.setIcon(QMessageBox.Critical)
+                                cat_popup = cat_err.exec_()
+                        else:
+                                subcategory = subcategory.split("-")[1]
+                                subcategory_id = find_expense_subcategory_by_name(conn, cursor, subcategory)[0]
+                                transaction_date = self.ui.dateEdit_expense.date()
+                                transaction_date = transaction_date.toString(QtCore.Qt.DateFormat.ISODate) + "T00:00:00Z"
+                                insert_transaction(conn, cursor, transaction_date, None, subcategory_id, None, 'EUR', None)
+                                transaction_id = cursor.lastrowid
+                                insert_transaction_item(conn, cursor, transaction_id, user_id, amount)
+                                msg_exp = QMessageBox()
+                                msg_exp.setWindowTitle("Expense Input Confirmation")
+                                msg_exp.setText("Expense has been submitted successfully")
+                                msg_exp.setIcon(QMessageBox.Information)
+                                E_popup = msg_exp.exec_()
+                                self.ui.stackedWidget.setCurrentWidget(self.ui.home)
 def run_app():
         app = QApplication(sys.argv)
         main_win = MainWindow()
