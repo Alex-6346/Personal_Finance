@@ -355,6 +355,11 @@ def unrecorded_transaction_no_write(fact_balance = 0.0):
     # with negative sign, just as in PersonalFinance.pdf
     unrec_trans_zero_factbal = inc - exp + net_debt - fact_balance*(-1)
     
+    print(f"\nAll reported amounts are in Euros (€)\n\n\
+unrecorded transactions:{unrec_trans_zero_factbal},\n\
+total income: {inc},\ntotal expenses: {exp},\nnet debt: {net_debt},\n\
+total owes: {owes_base},\ntotal owed: {owed_base}")
+    
     return unrec_trans_zero_factbal, inc, exp, net_debt, owes_base, owed_base
 
 
@@ -415,11 +420,14 @@ def unrecorded_transaction_write(fact_balance = 0):
             
             #conn.close()
         
-        return unrecorded_transaction_no_write()
     
-    else:
-        
-        return unrecorded_transaction_no_write()
+    unrec, inc, exp, net_debt, owes_base, owed_base = unrecorded_transaction_no_write()
+    
+    print(f"\nAll reported amounts are in Euros (€)\n\nunrecorded transactions:{unrec},\n\
+    total income: {inc},\ntotal expenses: {exp},\nnet debt: {net_debt},\n\
+    total owes: {owes_base},\ntotal owed: {owed_base}")
+    
+    return unrecorded_transaction_no_write()
 
 
 #%%

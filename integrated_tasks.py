@@ -6,6 +6,7 @@ from sql_queries_methods import create_tables, fill_tables, access_to_splitwise
 from sql_currency import currency
 from second_task import sql_income
 import unrect_transac as unrt 
+from random_loop import loop_control
 
 #See unrecorded transactions function descriptions, arguments and returned values
 #print(unrt.__doc__) 
@@ -39,43 +40,14 @@ def run_sync():
     sObj = access_to_splitwise()
     splitwise_sync(sObj)
     sql_income(sObj)
-    status = currency()
-    print(f'\nAPI status code: {status} \n"200" success. Today´s rates saved to file\n\
-Other than "200" an API error ocurred. Old rates taken from local file\n\
-"None", not necessary a new call. Today´s rates taken from local file\n')
-    
-    unrecorded_trans, income, expense, net_debt, owes_base, owed_base = unrt.unrecorded_transaction_no_write(0)
+    loop_control() # loop_control(20,40)  [(income, expenses)]
+    currency()
+    unrt.unrecorded_transaction_no_write()
+    #unrt.unrecorded_transaction_write()
 
-    print(f"\nAll reported amounts are in Euros (€)\n\nunrecorded transactions:{unrecorded_trans},\n\
-    total income: {income},\ntotal expenses: {expense},\nnet debt: {net_debt},\n\
-    total owes: {owes_base},\ntotal owed: {owed_base}")
-
-
+#%%
 
 if __name__ == '__main__':
 
-    sObj = access_to_splitwise()
-    splitwise_sync(sObj)
-    sql_income(sObj)
-    
-    status = currency()
-      
-    # Does not write on database
-    # change 0 for othe number that u want for fact balance
-    unrecorded_trans, income, expense, net_debt, owes_base, owed_base = unrt.unrecorded_transaction_no_write(0)
-    
-    unrt.unrecorded_transaction_no_write()
-    
-    unrt.unrecorded_transaction_no_write(13020)
-    
-    print(f"\nAll reported amounts are in Euros (€)\n\nunrecorded transactions:{unrecorded_trans},\n\
-total income: {income},\ntotal expenses: {expense},\nnet debt: {net_debt},\n\
-total owes: {owes_base},\ntotal owed: {owed_base}")
-    
-    
-    # Writes on database only  when fact balance is different than zero
-    # writes on db fact balance as (positive or negative) income that balance out unrecorded transactions 
-    unrt.unrecorded_transaction_write(0) # replace 0 by your fact balance
-    
-
+    run_sync()
     

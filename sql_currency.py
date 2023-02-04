@@ -70,26 +70,34 @@ def fixer_api_latest():
     
     payload = {}
     key= {"apikey": settings['fixer_key2']}
-    
-    # connect to api and verify status code before pulling data
-    get_url = requests.get(url, headers=key, data = payload)
-    status_code = get_url.status_code
-    
+        
+    #status_code = get_url.status_code
+    status_code = None
 
-    if status_code == 200 and settings['current_date'] != str(datetime.now().date()):
+    if settings['current_date'] != str(datetime.now().date()):
         
-        settings['current_date'] = str(datetime.now().date())
+        # connect to api and verify status code before pulling data
+        get_url = requests.get(url, headers=key, data = payload)
         
-        settings.to_json('settings.txt')
-        
-        with open ('exchange_rate.json','w') as f:
-            json.dump(get_url.json(), f)
+        status_code = get_url.status_code
+
+        if status_code == 200:
+            
+            settings['current_date'] = str(datetime.now().date())
+            
+            settings.to_json('settings.txt')
+            
+            with open ('exchange_rate.json','w') as f:
+                json.dump(get_url.json(), f)
     
-    elif status_code == 200 and settings['current_date'] == str(datetime.now().date()):
-        status_code = None
+    #elif status_code == 200 and settings['current_date'] == str(datetime.now().date()):
+    #    status_code = None
     
-    # if no status_code error updates only once a day currency rates in file                
-    return status_code
+    print(f'\nAPI status code: {status_code} \n"200" success. Today´s rates saved to file\n\
+Other than "200" an API error ocurred. Old rates taken from local file\n\
+"None", not necessary a new call. Today´s rates taken from local file\n')
+    
+    # if no status_code error updates only once a day currency rates in file
 
 #%%
 

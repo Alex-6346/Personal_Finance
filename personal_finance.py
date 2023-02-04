@@ -7,13 +7,15 @@
 from PyQt5 import QtCore, QtWidgets, QtGui
 from PyQt5.QtWidgets import QApplication, QMainWindow, QMessageBox
 import sys
+
 from sql_queries_methods import *
+
 from console import Ui_MainWindow
 from integrated_tasks import *
 from datetime import datetime
+
 # Task 4
 import unrect_transac as unrt
-from Prediction_TraMy import *
 
 
 
@@ -48,12 +50,6 @@ class MainWindow:
                 self.ui.Button_Income_submit.clicked.connect(self.submit_income)
                 ### Signal for Expense Input ###
                 self.ui.Button_expense_submit.clicked.connect(self.submit_expense)
-                ### Signal for Prediction ###
-                self.ui.Button_prediction_generate.clicked.connect(self.generate_predict)
-                self.ui.Button_prediction_download.clicked.connect(self.download_pdf)
-                ### Signal for Reporting ###
-                self.ui.Button_reporting_generate.clicked.connect(self.generate_report)
-                self.ui.Button_reporting_download.clicked.connect(self.download_report)
 
         def show(self):
                 self.main_win.show()
@@ -185,30 +181,6 @@ class MainWindow:
                                 msg_exp.setIcon(QMessageBox.Information)
                                 E_popup = msg_exp.exec_()
                                 self.ui.stackedWidget.setCurrentWidget(self.ui.home)
-
-        ### Buton Events for Prediction ###
-        def generate_predict(self):
-                bal1, bal2, bal3, predict = run_prediction()
-                name, fig = plot_prediction(bal1, bal2, bal3, predict)
-                save_plot_jpg(name, fig)
-                self.ui.image_predict.setPixmap(QtGui.QPixmap(name+".jpg"))
-        def download_pdf(self):
-                bal1, bal2, bal3, predict = run_prediction()
-                name, fig = plot_prediction(bal1, bal2, bal3, predict)
-                download_plot(name,fig)
-                msg_pred = QMessageBox()
-                msg_pred.setWindowTitle("Download Confirmation")
-                msg_pred.setText("The plot has been successfully downloaded as a pdf file")
-                msg_pred.setIcon(QMessageBox.Information)
-                E_popup = msg_pred.exec_()
-
-        ### Button Events for Reporting ###
-        def generate_report(self):
-                pass
-
-        def download_report(self):
-                pass
-
 
 #%%
 
