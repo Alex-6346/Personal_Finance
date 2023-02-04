@@ -103,7 +103,7 @@ class MainWindow:
                         fact_err.setIcon(QMessageBox.Critical)
                         fact_popup = fact_err.exec_()
                 else:
-                        unr, income, expense, debt, owes, owed = unrt.unrecorded_transaction_write(fact)
+                        unr, income, expense, net_debt, owes, owed = unrt.unrecorded_transaction_write(fact)
                         self.ui.Income_value_label.setText(str(round(income,2))+" €")
                         self.ui.Expense_value_label.setText(str(round(expense,2))+" €")
                         self.ui.Debt_value_label.setText(str(round(net_debt,2))+" €")
@@ -222,5 +222,5 @@ def run_app():
     sys.exit(app.exec_())
 
 #%%
-
-run_app()
+if __name__ == "__main__":
+    run_app()
