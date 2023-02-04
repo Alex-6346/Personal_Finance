@@ -14,6 +14,7 @@ from datetime import datetime
 # Task 4
 import unrect_transac as unrt
 from Prediction_TraMy import *
+from reporting_TraMy import report, save_pie
 
 
 
@@ -204,10 +205,11 @@ class MainWindow:
 
         ### Button Events for Reporting ###
         def generate_report(self):
-                pass
+                report()
+                self.ui.image_reporting.setPixmap(QtGui.QPixmap("pie_charts.jpg"))
 
         def download_report(self):
-                pass
+                save_pie()
 
 
 #%%

@@ -154,12 +154,12 @@ def plot_bal_cummsum():
         
         ax[1].grid()
         
-        fig[i].supylabel("euros €")
+        #fig[i].supylabel("euros €")
         
         # hspace vertical space, wspace horizontal
         fig[i].subplots_adjust(hspace=0.3)
         
-        #fig[i].savefig(f'daily {name[i]}', format='svg')
+        fig[i].savefig(f'daily_{name[i]}.jpg', format='jpg')
         
         plot_ls.append(fig[i])
     
@@ -176,4 +176,7 @@ if __name__ == "__main__":
     plots_ls[1]
     
     plots_ls[2]
+
+    def download_balance():
+        plots_ls[2].savefig("daily_balances.pdf", format = 'pdf')
 

@@ -15,13 +15,11 @@ def pie_plot(df, value=5):
     
     df_pie = df.groupby('Subcategory')[
             'sum(base_amount)'].sum().sort_values(ascending=False).reset_index()
-    
-    #creating list of "subcategory_name" and sum(base_mount)
+
     
     list_sub_1 = df_pie['Subcategory'].tolist()
     list_amount_1 = df_pie['sum(base_amount)'].tolist()
-    
-    #labels_1 = [f'{l}, {s:0.1f}%' for l, s in zip(list_sub_1, list_amount_1)]
+
     
     return list_amount_1, list_sub_1
 
@@ -56,9 +54,7 @@ def report():
     income_df = pd.DataFrame(income, columns = ['expense_date', 'subcategory_id', 'sum(base_amount)', 'type'])
     
     # Create a PDF file for the plots
-    #now = datetime.now().strftime("%Y-%m-%d")
-    #pp = PdfPages(f'{now}.pdf')
-    
+
     fig, ax= plt.subplots(2,2, figsize=(9,6))
     
     fig.axes
@@ -103,15 +99,7 @@ def report():
                 autopct='%1.0f%%', colors=sns.color_palette('Set2'))
                 #textprops=dict(color='white')
     ax[0,0].set_title('Expenses last month')
-    #ax[0,0].legend(title = "subcategory name:",loc = 'upper right', bbox_to_anchor=(0.4, 0.3),)
-    #ax1.axis('equal')  # Equal aspect ratio ensures that pie is drawn as a circle.
-    #pie1 = plt.gcf()
-    
-    #save the pie chart
-    #pie1.savefig(f'{now}_pie1.jpg')
-    #pp.savefig()
-    
-    
+
     
                                                                    ###creating pie chart 2 months ago## 
     #calculating percentage of each subcategory
@@ -221,7 +209,7 @@ def report():
     # 
     fig.subplots_adjust(hspace=0.4, wspace=0.3)
     
-    #fig.savefig('pie_charts.svg', format='svg')
+    fig.savefig('pie_charts.jpg', format='jpg')
     
     #fig.savefig('pie_charts.pdf', format='pdf')
 
