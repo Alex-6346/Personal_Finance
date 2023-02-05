@@ -1,15 +1,18 @@
+from sklearn import linear_model
+import sqlite3
+import numpy as np
+import pandas as pd
+from datetime import datetime
+import math
+import matplotlib.pyplot as plt
+
+
 def run_prediction():
     """
     :return: balances of the previous 3 months and the prediction of the following month.
     balance_1, balance_2, balance_3, prediction
     """
-    from sklearn import linear_model
-    import sqlite3
-    import numpy as np
-    import pandas as pd
-    from datetime import datetime
-    import math
-    import matplotlib.pyplot as plt
+
     try:
         sqliteConnection = sqlite3.connect("61730143.sqlite") #connect with database
         cursor = sqliteConnection.cursor()
@@ -59,7 +62,10 @@ def run_prediction():
         prediction = i
     return balance_dec, balance_jan, balance_feb, prediction
 
-def plot_prediction(balance_1,balance_2,balance_3,prediction):
+def plot_prediction():
+    
+    balance_1,balance_2,balance_3,prediction = run_prediction()
+    
     """
     Takes the balance of the last three months and the prediction of the following month. Then it saves the plot as jpg
     and returns the name of the file and the figure of the plot
@@ -69,26 +75,47 @@ def plot_prediction(balance_1,balance_2,balance_3,prediction):
     :param prediction
     :return: name of plot file and figure of plot
     """
-    import numpy as np
-    import matplotlib.pyplot as plt
-    from datetime import datetime
     #plot the output#
+    
+    fig, ax = plt.subplots()
+    
     X_values = np.array([1,2,3,4])
     Y_values = np.array([balance_1,balance_2,balance_3,prediction])
-    plt.scatter(X_values, Y_values, color="black", linewidth=3)
+    ax.scatter(X_values, Y_values, color="black", linewidth=3)
     m, b = np.polyfit(X_values, Y_values, 1)
-    plt.plot(X_values, m*X_values+b, color="blue", linewidth=3)
-    plt.xlabel('months')
-    plt.ylabel('balance')
-    plt.title('Prediction')
-    pred = plt.gcf()
-    plt.show()
+    ax.plot(X_values, m*X_values+b, color="blue", linewidth=3)
+    ax.set_xlabel('months')
+    ax.set_ylabel('balance')
+    ax.set_title('Prediction')
+    
+    #pred = plt.gcf()
+    #plt.show()
+    
     now = datetime.now().strftime("%Y-%m-%d")
     name = f'{now}_prediction'
-    return name, pred
-def save_plot_jpg(name, fig):
+    return fig, name
+
+def save_plot_jpg():
+    
+    fig, name = plot_prediction()
+    
     fig.savefig(name + '.jpg')
-def download_plot(name,fig):
+    
+    return name
+
+
+def download_plot():
+    
+    fig, name = plot_prediction()
+    
     fig.savefig(name+'.pdf')
+    
+    return name
 
+#%%
 
+if __name__ == "__main__":
+    
+    save_plot_jpg()
+    
+    download_plot()

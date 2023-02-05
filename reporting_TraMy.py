@@ -134,6 +134,9 @@ def save_pie():
     fig = report()
     
     fig.savefig(f'pie_charts_{datetime.now().strftime("%m%d%Y_%H%M%S")}.pdf', format='pdf')
+    
+    fig.clear()
+    plt.close(fig)
 
     #fig.savefig('pie_charts'+datetime.now().strftime("%m/%d/%Y_%H/%M/%S")+'.pdf', format='pdf')
 
@@ -141,7 +144,7 @@ def save_pie():
 
 if __name__ == "__main__":
 
-    fig = report()
+    report()
     
     save_pie()
 

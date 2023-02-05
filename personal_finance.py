@@ -197,14 +197,10 @@ class MainWindow:
 
         ### Buton Events for Prediction ###
         def generate_predict(self):
-                bal1, bal2, bal3, predict = run_prediction()
-                name, pred = plot_prediction(bal1, bal2, bal3, predict)
-                save_plot_jpg(name, pred)
+                name = save_plot_jpg()
                 self.ui.image_predict.setPixmap(QtGui.QPixmap(name+".jpg"))
         def download_pdf(self):
-                bal1, bal2, bal3, predict = run_prediction()
-                name, pred = plot_prediction(bal1, bal2, bal3, predict)
-                download_plot(name,pred)
+                download_plot()
                 msg_pred = QMessageBox()
                 msg_pred.setWindowTitle("Download Confirmation")
                 msg_pred.setText("The plot has been successfully downloaded as a pdf file")
