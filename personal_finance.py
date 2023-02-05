@@ -1,21 +1,13 @@
-### List of packages that need to be installed ###
-## Task 1 and 3: splitwise, sqlite3, json
-## Task 7: pyqt5, pyqt5-tools
-
-### Importing all the necessary libraries ###
-### For the interface ##
 from PyQt5 import QtCore, QtWidgets, QtGui
 from PyQt5.QtWidgets import QApplication, QMainWindow, QMessageBox
 import sys
 from sql_queries_methods import *
 from console import Ui_MainWindow
 from integrated_tasks import *
-from datetime import datetime
-# Task 4
 import unrect_transac as unrt
 from Prediction_TraMy import *
 from reporting_TraMy import report, save_pie
-from Balance_Plots import plot_bal_cummsum, download_balance
+from Balance_Plots import plot_bal_cummsum
 
 
 ## Main Window ##
