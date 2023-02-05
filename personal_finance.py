@@ -44,7 +44,7 @@ class MainWindow:
                 self.ui.Button_back_2.clicked.connect(self.go_to_home)
                 self.ui.Button_back_3.clicked.connect(self.go_to_home_pred)
                 self.ui.Button_back_4.clicked.connect(self.go_to_home_rep)
-                self.ui.Button_back_5.clicked.connect(self.go_to_home)
+                self.ui.Button_back_5.clicked.connect(self.go_to_home_unr)
                 ### Signal of Buttons of UNR transactions ###
                 self.ui.UNR_calculate_button.clicked.connect(self.unr_calculate)
                 self.ui.UNR_submit_button.clicked.connect(self.unr_submit)
@@ -83,6 +83,14 @@ class MainWindow:
 
         def go_to_home_rep(self):
                 self.ui.image_reporting.setPixmap(QtGui.QPixmap("background_image.JPG"))
+                self.ui.stackedWidget.setCurrentWidget(self.ui.home)
+        def go_to_home_unr(self):
+                self.ui.Income_value_label.setText("")
+                self.ui.Expense_value_label.setText("")
+                self.ui.Debt_value_label.setText("")
+                self.ui.Owe_label_value.setText("")
+                self.ui.Owed_label_value.setText("")
+                self.ui.UNR_label_2.setText("UNR Amount: ")
                 self.ui.stackedWidget.setCurrentWidget(self.ui.home)
 
         ### Button evens in UNR ###
@@ -126,7 +134,6 @@ class MainWindow:
                         msg_unr.setText("Factual Balance has been submitted successfully")
                         msg_unr.setIcon(QMessageBox.Information)
                         unr_popup = msg_unr.exec_()
-                        self.ui.stackedWidget.setCurrentWidget(self.ui.home)
 
         ### Events for Income Submit ###
         def submit_income(self):
