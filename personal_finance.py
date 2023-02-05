@@ -37,8 +37,8 @@ class MainWindow:
                 ### Signal of Back Buttons ###
                 self.ui.Button_back.clicked.connect(self.go_to_home)
                 self.ui.Button_back_2.clicked.connect(self.go_to_home)
-                self.ui.Button_back_3.clicked.connect(self.go_to_home)
-                self.ui.Button_back_4.clicked.connect(self.go_to_home)
+                self.ui.Button_back_3.clicked.connect(self.go_to_home_pred)
+                self.ui.Button_back_4.clicked.connect(self.go_to_home_rep)
                 self.ui.Button_back_5.clicked.connect(self.go_to_home)
 
                 ### Signal of Buttons of UNR transactions ###
@@ -74,6 +74,14 @@ class MainWindow:
         ### Event of Back Buttons ###
         def go_to_home(self):
                 self.ui.stackedWidget.setCurrentWidget(self.ui.home)
+        def go_to_home_pred(self):
+                self.ui.image_predict.setPixmap(QtGui.QPixmap("background_image.JPG"))
+                self.ui.stackedWidget.setCurrentWidget(self.ui.home)
+
+        def go_to_home_rep(self):
+                self.ui.image_reporting.setPixmap(QtGui.QPixmap("background_image.JPG"))
+                self.ui.stackedWidget.setCurrentWidget(self.ui.home)
+
 
         ### Button evens in UNR ###
         def unr_calculate(self):
@@ -190,13 +198,13 @@ class MainWindow:
         ### Buton Events for Prediction ###
         def generate_predict(self):
                 bal1, bal2, bal3, predict = run_prediction()
-                name, fig = plot_prediction(bal1, bal2, bal3, predict)
-                save_plot_jpg(name, fig)
+                name, pred = plot_prediction(bal1, bal2, bal3, predict)
+                save_plot_jpg(name, pred)
                 self.ui.image_predict.setPixmap(QtGui.QPixmap(name+".jpg"))
         def download_pdf(self):
                 bal1, bal2, bal3, predict = run_prediction()
-                name, fig = plot_prediction(bal1, bal2, bal3, predict)
-                download_plot(name,fig)
+                name, pred = plot_prediction(bal1, bal2, bal3, predict)
+                download_plot(name,pred)
                 msg_pred = QMessageBox()
                 msg_pred.setWindowTitle("Download Confirmation")
                 msg_pred.setText("The plot has been successfully downloaded as a pdf file")
@@ -210,6 +218,11 @@ class MainWindow:
 
         def download_report(self):
                 save_pie()
+                msg_report = QMessageBox()
+                msg_report.setWindowTitle("Download Confirmation")
+                msg_report.setText("The plot has been successfully downloaded as a pdf file")
+                msg_report.setIcon(QMessageBox.Information)
+                report_popup = msg_report.exec_()
 
 
 #%%

@@ -81,11 +81,11 @@ def plot_prediction(balance_1,balance_2,balance_3,prediction):
     plt.xlabel('months')
     plt.ylabel('balance')
     plt.title('Prediction')
-    fig1 = plt.gcf()
+    pred = plt.gcf()
     plt.show()
     now = datetime.now().strftime("%Y-%m-%d")
     name = f'{now}_prediction'
-    return name, fig1
+    return name, pred
 def save_plot_jpg(name, fig):
     fig.savefig(name + '.jpg')
 def download_plot(name,fig):
