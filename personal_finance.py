@@ -15,23 +15,26 @@ from datetime import datetime
 import unrect_transac as unrt
 from Prediction_TraMy import *
 from reporting_TraMy import report, save_pie
-
+from Balance_Plots import plot_bal_cummsum, download_balance
 
 
 ## Main Window ##
 class MainWindow:
         def __init__(self):
                 self.main_win = QMainWindow()
+                self.main_win.setWindowTitle("Personal Finance - A Splitwise extension")
                 self.ui = Ui_MainWindow()
                 self.ui.setupUi(self.main_win)
 
                 self.ui.stackedWidget.setCurrentWidget(self.ui.home)
                 ### Signal of Buttons of Menu Bar ###
+                self.ui.actionHome.triggered.connect(self.go_to_home)
                 self.ui.actionIncome_input.triggered.connect(self.go_to_income)
                 self.ui.actionExpense_input.triggered.connect(self.go_to_expense)
                 self.ui.actionPrediction.triggered.connect(self.go_to_prediction)
                 self.ui.actionReporting.triggered.connect(self.go_to_reporting)
                 self.ui.actionUnrecorded_transactions.triggered.connect(self.go_to_unrecorded)
+                self.ui.actionDaily_Balances.triggered.connect(self.go_to_balances)
                 self.ui.actionExit.triggered.connect(QApplication.instance().quit)
                 ### Signal of Buttons of Main Menu ###
                 self.ui.Button_Income.clicked.connect(self.go_to_income)
@@ -39,13 +42,15 @@ class MainWindow:
                 self.ui.Button_prediction.clicked.connect(self.go_to_prediction)
                 self.ui.Button_reporting.clicked.connect(self.go_to_reporting)
                 self.ui.Button_Unrecorded.clicked.connect(self.go_to_unrecorded)
+                self.ui.Button_balances.clicked.connect(self.go_to_balances)
                 ### Signal of Back Buttons ###
                 self.ui.Button_back.clicked.connect(self.go_to_home)
                 self.ui.Button_back_2.clicked.connect(self.go_to_home)
                 self.ui.Button_back_3.clicked.connect(self.go_to_home_pred)
                 self.ui.Button_back_4.clicked.connect(self.go_to_home_rep)
                 self.ui.Button_back_5.clicked.connect(self.go_to_home_unr)
-                ### Signal of Buttons of UNR transactions ###
+                self.ui.Button_back_6.clicked.connect(self.go_to_home_balances)
+                ### Signal of Buttons for UNR transactions ###
                 self.ui.UNR_calculate_button.clicked.connect(self.unr_calculate)
                 self.ui.UNR_submit_button.clicked.connect(self.unr_submit)
                 ### Signal for Income Input ###
@@ -58,6 +63,9 @@ class MainWindow:
                 ### Signal for Reporting ###
                 self.ui.Button_reporting_generate.clicked.connect(self.generate_report)
                 self.ui.Button_reporting_download.clicked.connect(self.download_report)
+                ### Signal for Daily Balances ###
+                self.ui.Button_balances_generate.clicked.connect(self.generate_balances)
+                self.ui.Button_balances_download.clicked.connect(self.download_balances)
 
         def show(self):
                 self.main_win.show()
@@ -73,6 +81,8 @@ class MainWindow:
                 self.ui.stackedWidget.setCurrentWidget(self.ui.reporting)
         def go_to_unrecorded(self):
                 self.ui.stackedWidget.setCurrentWidget(self.ui.unr)
+        def go_to_balances(self):
+                self.ui.stackedWidget.setCurrentWidget(self.ui.balances)
 
         ### Event of Back Buttons ###
         def go_to_home(self):
@@ -91,6 +101,9 @@ class MainWindow:
                 self.ui.Owe_label_value.setText("")
                 self.ui.Owed_label_value.setText("")
                 self.ui.UNR_label_2.setText("UNR Amount: ")
+                self.ui.stackedWidget.setCurrentWidget(self.ui.home)
+        def go_to_home_balances(self):
+                self.ui.image_balance.setPixmap(QtGui.QPixmap("background_image.JPG"))
                 self.ui.stackedWidget.setCurrentWidget(self.ui.home)
 
         ### Button evens in UNR ###
@@ -229,6 +242,19 @@ class MainWindow:
                 msg_report.setIcon(QMessageBox.Information)
                 report_popup = msg_report.exec_()
 
+        ### Button Events for Balances ##
+        def generate_balances(self):
+                plot_bal_cummsum()
+                self.ui.image_balance.setPixmap(QtGui.QPixmap("daily_balances.jpg"))
+
+        def download_balances(self):
+                plots_ls = plot_bal_cummsum()
+                plots_ls[2].savefig("daily_balances.pdf", format='pdf')
+                msg_bal = QMessageBox()
+                msg_bal.setWindowTitle("Download Confirmation")
+                msg_bal.setText("The plot has been successfully downloaded as a pdf file")
+                msg_bal.setIcon(QMessageBox.Information)
+                bal_popup = msg_bal.exec_()
 #%%
 
 def run_app():

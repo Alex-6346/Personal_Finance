@@ -164,7 +164,8 @@ def plot_bal_cummsum():
         plot_ls.append(fig[i])
     
     return plot_ls
-
+def download_balance(plot_ls):
+    plots_ls[2].savefig("daily_balances.pdf", format = 'pdf')
 #%%
 
 if __name__ == "__main__":
@@ -177,6 +178,5 @@ if __name__ == "__main__":
     
     plots_ls[2]
 
-    def download_balance():
-        plots_ls[2].savefig("daily_balances.pdf", format = 'pdf')
+
 
