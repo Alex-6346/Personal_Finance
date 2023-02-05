@@ -26,25 +26,28 @@ class MainWindow:
                 self.ui.setupUi(self.main_win)
 
                 self.ui.stackedWidget.setCurrentWidget(self.ui.home)
-
+                ### Signal of Buttons of Menu Bar ###
+                self.ui.actionIncome_input.triggered.connect(self.go_to_income)
+                self.ui.actionExpense_input.triggered.connect(self.go_to_expense)
+                self.ui.actionPrediction.triggered.connect(self.go_to_prediction)
+                self.ui.actionReporting.triggered.connect(self.go_to_reporting)
+                self.ui.actionUnrecorded_transactions.triggered.connect(self.go_to_unrecorded)
+                self.ui.actionExit.triggered.connect(QApplication.instance().quit)
                 ### Signal of Buttons of Main Menu ###
                 self.ui.Button_Income.clicked.connect(self.go_to_income)
                 self.ui.Button_Expense.clicked.connect(self.go_to_expense)
                 self.ui.Button_prediction.clicked.connect(self.go_to_prediction)
                 self.ui.Button_reporting.clicked.connect(self.go_to_reporting)
                 self.ui.Button_Unrecorded.clicked.connect(self.go_to_unrecorded)
-
                 ### Signal of Back Buttons ###
                 self.ui.Button_back.clicked.connect(self.go_to_home)
                 self.ui.Button_back_2.clicked.connect(self.go_to_home)
                 self.ui.Button_back_3.clicked.connect(self.go_to_home_pred)
                 self.ui.Button_back_4.clicked.connect(self.go_to_home_rep)
                 self.ui.Button_back_5.clicked.connect(self.go_to_home)
-
                 ### Signal of Buttons of UNR transactions ###
                 self.ui.UNR_calculate_button.clicked.connect(self.unr_calculate)
                 self.ui.UNR_submit_button.clicked.connect(self.unr_submit)
-
                 ### Signal for Income Input ###
                 self.ui.Button_Income_submit.clicked.connect(self.submit_income)
                 ### Signal for Expense Input ###
@@ -81,7 +84,6 @@ class MainWindow:
         def go_to_home_rep(self):
                 self.ui.image_reporting.setPixmap(QtGui.QPixmap("background_image.JPG"))
                 self.ui.stackedWidget.setCurrentWidget(self.ui.home)
-
 
         ### Button evens in UNR ###
         def unr_calculate(self):
@@ -219,7 +221,6 @@ class MainWindow:
                 msg_report.setText("The plot has been successfully downloaded as a pdf file")
                 msg_report.setIcon(QMessageBox.Information)
                 report_popup = msg_report.exec_()
-
 
 #%%
 
