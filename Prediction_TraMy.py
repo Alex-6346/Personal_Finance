@@ -25,7 +25,7 @@ except sqlite3.IntegrityError as err:
 sql_query = pd.read_sql_query('''SELECT * FROM Transactions JOIN TransactionItems AS ti ON Transactions.id = ti.transaction_id WHERE user_id = 61730143''', sqliteConnection )
 
 df = pd.DataFrame(sql_query, columns = ['id', 'expense_date', 'group_id', 'subcategory_id', 'description', 'currency_code', 'repeat_interval', 'updated_date', 'id', 'transaction_id', 'user_id', 'amount', 'base_amount'])
-
+print(df)
 data = df[["expense_date", "subcategory_id", "base_amount"]]
 
 #december = data[data['expense_date'].dt.strftime('%m') == '12'] to filter only december
@@ -50,7 +50,7 @@ pd.DatetimeIndex(data["expense_date"]).month
 balance_feb = 0
 balance_jan = 0
 balance_dec =0
-for i in [2,1,12] :
-    temp = data[data['expense_date'].dt.strftime('%m') == i]
-    for row in temp:
-        if ['subcategory_id']
+#for i in [2,1,12] :
+  #  temp = data[data['expense_date'].dt.strftime('%m') == i]
+   # for row in temp:
+        #if ['subcategory_id']
